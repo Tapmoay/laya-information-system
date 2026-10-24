@@ -38,6 +38,9 @@ description: 运营 LaYA / 个人信息环境系统——首次设置（需求�
 环境完全不同（没有仓库、没有聊天渠道、方向不一样）时，先读
 [`references/adaptation.md`](references/adaptation.md)：
 不变量照抄，实现随便换，判断结果不要照抄。
+**如果只有技能包、要从零构建整套系统**，读
+[`references/build-from-scratch.md`](references/build-from-scratch.md)：
+它给出七阶段、每阶段验收、六个数据契约与完成定义。
 
 配置写在三份文件里：
 
@@ -252,6 +255,7 @@ python tools/learn.py --user me --scores ... --from-overrides ... --apply
 | `FIRST-SETUP.md` | 第一次配置；配完删除 |
 | [`references/onboarding.md`](references/onboarding.md) | 六个问题、判断/推送选项、能力矩阵 |
 | [`references/adaptation.md`](references/adaptation.md) | 换环境、换用户、没有仓库、加新推送渠道 |
+| [`references/build-from-scratch.md`](references/build-from-scratch.md) | 只有技能包时，从零构建整套系统的七阶段与验收 |
 | [`references/cloud-judgment.md`](references/cloud-judgment.md) | 改提示词、换模型、查云端契约与失败码 |
 | [`references/operations.md`](references/operations.md) | 定时任务、凭据、代理、日志、巡检、回滚 |
 | `PACKAGE.md` | 这个包有什么、没有什么、怎么安装/分发 |

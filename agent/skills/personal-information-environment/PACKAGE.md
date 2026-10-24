@@ -13,6 +13,7 @@
 | `FIRST-SETUP.md` | **一次性**配置清单；配完删除 |
 | `references/onboarding.md` | 六个问题、判断/推送选项、能力矩阵 |
 | `references/adaptation.md` | 换环境/换用户怎么适配；推送渠道由用户决定 |
+| `references/build-from-scratch.md` | 只有技能包时，从零构建整套系统的七阶段、数据契约与验收 |
 | `references/cloud-judgment.md` | 云端 13 问契约、失败码、换模型协议 |
 | `references/operations.md` | 定时、凭据、代理、日志、巡检、回滚 |
 | `docs/38-daily-workflow.md` | 工作流规范：阶段契约、通过条件、变更协议 |
@@ -27,7 +28,8 @@
 - 模型权重、API key、SMTP 授权码、聊天工具凭据：**永远不在包里**。
 - 作者的 `config/user.yaml`、`config/USER.md`、`runs/`、`store/`：个人数据，不带。
 
-**技能 + 仓库**才是完整系统。只有技能时，拿到的是方法与契约，需要自己实现或向作者要仓库。
+**技能 + 仓库**才是完整系统。只有技能时，拿到的是方法与契约：
+先读 `references/build-from-scratch.md`，按七阶段自己实现或向作者要仓库。
 
 ## 第一次使用（agent 必读）
 
