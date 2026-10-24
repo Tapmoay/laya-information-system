@@ -1,0 +1,18 @@
+{
+  "source_identity_id": "src-cand-0001",
+  "candidate_id": "cand-0001",
+  "publisher": {
+    "name": "repost.example",
+    "identity_status": "PROBABLE",
+    "evidence_refs": [
+      "fetch/site-name"
+    ]
+  },
+  "upstream": null,
+  "relation": "REPOST",
+  "evidence_refs": [
+    "fetch/canonical-link",
+    "fetch/site-name"
+  ],
+  "contract_version": "1.0"
+}

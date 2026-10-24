@@ -1,0 +1,13 @@
+{
+  "trigger_id": "trg-20261018120000",
+  "decided_at": "2026-10-18T12:00:00+08:00",
+  "action": "MISFIRE_SKIPPED",
+  "scheduled_for": "2026-10-18T09:00:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "calendar_rule": "0 9 * * *",
+  "misfire": true,
+  "misfire_policy": "SKIP",
+  "reason": "错过计划时刻 10800 秒，超过宽限 3600 秒，按策略跳过",
+  "run_id": null,
+  "contract_version": "1.0"
+}

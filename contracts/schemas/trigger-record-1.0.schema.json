@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/trigger-record/1.0",
+  "title": "TriggerRecord",
+  "description": "调度决策记录：这次为什么触发、为什么跳过、错过了什么。CAP-RUN-04 的输出。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trigger_id",
+    "decided_at",
+    "action",
+    "timezone",
+    "calendar_rule",
+    "misfire",
+    "misfire_policy",
+    "reason"
+  ],
+  "properties": {
+    "trigger_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "decided_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "action": {
+      "enum": [
+        "RUN",
+        "SKIP",
+        "DISABLED",
+        "ALREADY_RUN",
+        "MISFIRE_SKIPPED"
+      ]
+    },
+    "scheduled_for": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 60
+    },
+    "calendar_rule": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 120
+    },
+    "misfire": {
+      "type": "boolean"
+    },
+    "misfire_policy": {
+      "enum": [
+        "RUN_ONCE",
+        "SKIP"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 300
+    },
+    "run_id": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "RUN"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "required": [
+          "scheduled_for"
+        ],
+        "properties": {
+          "scheduled_for": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "MISFIRE_SKIPPED"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "misfire": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "enum": [
+              "DISABLED",
+              "ALREADY_RUN",
+              "MISFIRE_SKIPPED",
+              "SKIP"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "run_id": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

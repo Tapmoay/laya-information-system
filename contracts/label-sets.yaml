@@ -1,0 +1,51 @@
+version: "1.0"
+status: PROVISIONAL
+note: >-
+  标签集由本仓库定义，尚未经过 WP-R3 的跨语言评测校准。改变任何标签都必须同时提升
+  对应 label_set 的版本号，并同步 docs/06-object-contracts.md，否则历史测量记录无法复算。
+sets:
+  - measurement_type: RELEVANCE
+    label_set: RELEVANCE/1.0
+    capability_ids: [CAP-MEA-02]
+    labels: [DIRECT, ADJACENT, EXPLORATORY, UNRELATED, INSUFFICIENT_EVIDENCE]
+    source: "v0.3 §5.3 DecisionRequest.options"
+  - measurement_type: GROWTH_VALUE
+    label_set: GROWTH_VALUE/1.0
+    capability_ids: [CAP-MEA-03]
+    labels: [TRANSFERABLE_MECHANISM, PRACTICE_OPPORTUNITY, GAP_FILLING, INCREMENTAL, NONE, INSUFFICIENT_EVIDENCE]
+    source: "v0.3 §7.1 维度 2（能力增长价值），标签为本仓库定义"
+  - measurement_type: RECENCY
+    label_set: RECENCY/1.0
+    capability_ids: [CAP-MEA-04]
+    labels: [FRESH, RECENT, AGING, STALE]
+    source: "确定性时间分桶，阈值写在 selection/policy 而非模型里"
+  - measurement_type: DECISION_IMPACT
+    label_set: DECISION_IMPACT/1.0
+    capability_ids: [CAP-MEA-05]
+    labels: [CHANGES_DECISION, MAY_CHANGE_DECISION, CONTEXT_ONLY, NONE, INSUFFICIENT_EVIDENCE]
+    source: "v0.3 §7.1 维度 3（时效影响）"
+  - measurement_type: MATURITY
+    label_set: MATURITY/1.0
+    capability_ids: [CAP-MEA-06]
+    labels: [ANNOUNCED, DEMONSTRATED, REPRODUCIBLE, DEPLOYABLE, ESTABLISHED, INSUFFICIENT_EVIDENCE]
+    source: "information-policy.md §3.5 证据成熟度"
+  - measurement_type: CLAIM_EVIDENCE
+    label_set: CLAIM_EVIDENCE/1.0
+    capability_ids: [CAP-MEA-07]
+    labels: [SUPPORTED, PARTIALLY_SUPPORTED, CONFLICTING, INSUFFICIENT_EVIDENCE]
+    source: "v0.3 §7.1 维度 5（主张与证据关系）"
+  - measurement_type: EXPLORATION_VALUE
+    label_set: EXPLORATION_VALUE/1.0
+    capability_ids: [CAP-MEA-08]
+    labels: [HIGH, MODERATE, LOW, NONE, INSUFFICIENT_EVIDENCE]
+    source: "v0.3 §7.1 维度 6（探索价值）"
+  - measurement_type: IMPORTANCE
+    label_set: IMPORTANCE/1.0
+    capability_ids: [CAP-MEA-10]
+    labels: [S, A, B, INSUFFICIENT_EVIDENCE]
+    source: "information-policy.md §3.5 优先级（S/A/B 三级，S 级可打破容量）"
+  - measurement_type: SOURCE_CREDIBILITY
+    label_set: SOURCE_CREDIBILITY/1.0
+    capability_ids: [CAP-MEA-09]
+    labels: [PRIMARY_INDEPENDENT, PRIMARY_SINGLE, SECONDARY_INDEPENDENT, AGGREGATED, UNKNOWN]
+    source: "information-policy.md §5（来源与证据规则）"

@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/demand-snapshot/1.0",
+  "title": "DemandSnapshot",
+  "description": "一次运行的需求快照，不是永久画像。用户已确认目标与 AI 推断目标必须分开存放（政策 §1.5）。CAP-DEM-01 的输出。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "demand_snapshot_id",
+    "created_at",
+    "policy_bundle_ref",
+    "active_goals",
+    "inferred_goals",
+    "active_tasks",
+    "capability_gaps",
+    "constraints",
+    "exploration_intent",
+    "state",
+    "contract_version"
+  ],
+  "properties": {
+    "demand_snapshot_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "created_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "policy_bundle_ref": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "active_goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "goal_id",
+          "statement",
+          "state",
+          "source_ref"
+        ],
+        "properties": {
+          "goal_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 500
+          },
+          "state": {
+            "enum": [
+              "ACTIVE_EXPLICIT",
+              "ACTIVE_CONTEXTUAL"
+            ]
+          },
+          "source_ref": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          }
+        }
+      },
+      "description": "只放用户明确表达或当前项目材料支持的目标。AI 推测的目标没有资格出现在这里。"
+    },
+    "inferred_goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "goal_id",
+          "statement",
+          "state",
+          "evidence_refs"
+        ],
+        "properties": {
+          "goal_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 500
+          },
+          "state": {
+            "const": "CANDIDATE_INFERRED"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "active_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "statement",
+          "status"
+        ],
+        "properties": {
+          "task_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 500
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "DONE"
+            ]
+          },
+          "source_ref": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "capability_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gap_id",
+          "statement",
+          "priority"
+        ],
+        "properties": {
+          "gap_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 500
+          },
+          "priority": {
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "addresses_goal_ref": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "daily_information_budget_minutes",
+        "energy_state"
+      ],
+      "properties": {
+        "daily_information_budget_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 480,
+          "description": "政策 §4.3：正常 480 分钟、低精力 240 分钟。是上限，不是目标。"
+        },
+        "energy_state": {
+          "enum": [
+            "NORMAL",
+            "LOW"
+          ]
+        },
+        "excluded_topics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "energy_state": {
+                "const": "LOW"
+              }
+            },
+            "required": [
+              "energy_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "daily_information_budget_minutes": {
+                "maximum": 240
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exploration_intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "max_items"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "max_items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "domains_hint": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 300
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 300
+      }
+    },
+    "state": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/state"
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  }
+}

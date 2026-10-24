@@ -1,0 +1,56 @@
+{
+  "threshold": 0.525,
+  "weights": {
+    "direction": 0.3,
+    "value": 0.4,
+    "quality": 0.3,
+    "reduced": 0.1,
+    "direction_floor": 0.15
+  },
+  "mean_f1": 0.61,
+  "min_f1": 0.5,
+  "by_profile": {
+    "ai": {
+      "items": 32,
+      "positives": 10,
+      "f1": 0.72
+    },
+    "music_art": {
+      "items": 32,
+      "positives": 3,
+      "f1": 0.5
+    }
+  },
+  "fitted_at": "2026-10-18T07:55:53+00:00",
+  "dataset_size": 64,
+  "profiles": [
+    "ai",
+    "music_art"
+  ],
+  "holdout": {
+    "threshold": 0.525,
+    "weights": {
+      "direction": 0.3,
+      "value": 0.4,
+      "quality": 0.3,
+      "reduced": 0.1,
+      "direction_floor": 0.15
+    },
+    "mean_f1": 0.2,
+    "min_f1": 0.0,
+    "by_profile": {
+      "ai": {
+        "items": 10,
+        "positives": 2,
+        "f1": 0.4
+      },
+      "music_art": {
+        "items": 10,
+        "positives": 2,
+        "f1": 0.0
+      }
+    }
+  },
+  "holdout_items": 10,
+  "train_rows": 64
+}

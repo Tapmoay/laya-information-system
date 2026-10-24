@@ -1,0 +1,303 @@
+# 对象契约夹具清单。
+# 每个夹具都必须声明期望结果；valid 若失败、invalid 若通过，都算契约回归。
+# error_contains 用于确认"失败原因确实是我们要拦的那一条"，避免凑巧因为别的字段报错而通过测试。
+fixtures:
+  # ---------------- candidate-record ----------------
+  - type: candidate-record
+    path: candidate-record/valid/minimal.json
+    expect: valid
+  - type: candidate-record
+    path: candidate-record/boundary/mixed-language-unknown-date.json
+    expect: valid
+  - type: candidate-record
+    path: candidate-record/boundary/upstream-confirmed.json
+    expect: valid
+  - type: candidate-record
+    path: candidate-record/invalid/publisher-confirmed-without-evidence.json
+    expect: invalid
+    error_contains: evidence_refs
+  - type: candidate-record
+    path: candidate-record/invalid/published-known-with-unknown-state.json
+    expect: invalid
+    error_contains: published_at
+  - type: candidate-record
+    path: candidate-record/invalid/retrieval-error-without-state.json
+    expect: invalid
+    error_contains: state
+  - type: candidate-record
+    path: candidate-record/invalid/url-not-http.json
+    expect: invalid
+    error_contains: canonical_url
+  - type: candidate-record
+    path: candidate-record/invalid/unknown-language-with-html-method.json
+    expect: invalid
+    error_contains: method
+  - type: candidate-record
+    path: candidate-record/invalid/missing-canonical-url.json
+    expect: invalid
+    error_contains: canonical_url
+
+  # ---------------- measurement-record ----------------
+  - type: measurement-record
+    path: measurement-record/valid/relevance-model.json
+    expect: valid
+  - type: measurement-record
+    path: measurement-record/valid/recency-code.json
+    expect: valid
+  - type: measurement-record
+    path: measurement-record/valid/probabilities-calibrated.json
+    expect: valid
+  - type: measurement-record
+    path: measurement-record/boundary/abstain-language-scope.json
+    expect: valid
+  - type: measurement-record
+    path: measurement-record/boundary/translation-path.json
+    expect: valid
+  - type: measurement-record
+    path: measurement-record/invalid/value-with-abstain.json
+    expect: invalid
+    error_contains: value
+  - type: measurement-record
+    path: measurement-record/invalid/ok-without-evidence.json
+    expect: invalid
+    error_contains: evidence_refs
+  - type: measurement-record
+    path: measurement-record/invalid/model-without-revision.json
+    expect: invalid
+    error_contains: model_revision
+  - type: measurement-record
+    path: measurement-record/invalid/uncalibrated-probabilities.json
+    expect: invalid
+    error_contains: calibration_profile_id
+  - type: measurement-record
+    path: measurement-record/invalid/label-not-in-set.json
+    expect: invalid
+    error_contains: 不在
+  - type: measurement-record
+    path: measurement-record/invalid/reason-status-mismatch.json
+    expect: invalid
+    error_contains: 不相容
+  - type: measurement-record
+    path: measurement-record/invalid/label-set-version.json
+    expect: invalid
+    error_contains: label_set
+  - type: measurement-record
+    path: measurement-record/invalid/wrong-capability.json
+    expect: invalid
+    error_contains: 未被授权
+
+  # ---------------- policy-bundle ----------------
+  - type: policy-bundle
+    path: policy-bundle/valid/version-conflict-acknowledged.json
+    expect: valid
+  - type: policy-bundle
+    path: policy-bundle/boundary/no-conflict.json
+    expect: valid
+  - type: policy-bundle
+    path: policy-bundle/invalid/conflict-not-allowed-but-partial.json
+    expect: invalid
+    error_contains: INVALID
+
+  # ---------------- policy-config ----------------
+  - type: policy-config
+    path: policy-config/valid/default.json
+    expect: valid
+  - type: policy-config
+    path: policy-config/invalid/capacity-without-source.json
+    expect: invalid
+    error_contains: capacity_sources
+  - type: policy-config
+    path: policy-config/invalid/translation-without-original-title.json
+    expect: invalid
+    error_contains: show_original_title
+
+  # ---------------- demand-snapshot ----------------
+  - type: demand-snapshot
+    path: demand-snapshot/valid/current.json
+    expect: valid
+  - type: demand-snapshot
+    path: demand-snapshot/invalid/low-energy-over-budget.json
+    expect: invalid
+    error_contains: daily_information_budget_minutes
+  - type: demand-snapshot
+    path: demand-snapshot/invalid/inferred-goal-in-active.json
+    expect: invalid
+    error_contains: active_goals
+
+  # ---------------- selection-decision ----------------
+  - type: selection-decision
+    path: selection-decision/valid/deliver-core.json
+    expect: valid
+  - type: selection-decision
+    path: selection-decision/boundary/abstain.json
+    expect: valid
+  - type: selection-decision
+    path: selection-decision/invalid/ineligible-without-blocked-reasons.json
+    expect: invalid
+    error_contains: blocked_reasons
+  - type: selection-decision
+    path: selection-decision/invalid/deliver-while-abstaining.json
+    expect: invalid
+    error_contains: eligibility
+
+  # ---------------- delivery-object ----------------
+  - type: delivery-object
+    path: delivery-object/valid/one-item.json
+    expect: valid
+  - type: delivery-object
+    path: delivery-object/boundary/empty.json
+    expect: valid
+  - type: delivery-object
+    path: delivery-object/invalid/empty-without-reason.json
+    expect: invalid
+    error_contains: empty_reason
+  - type: delivery-object
+    path: delivery-object/invalid/non-contiguous-ranks.json
+    expect: invalid
+    error_contains: priority_rank
+
+  # ---------------- rendered-brief ----------------
+  - type: rendered-brief
+    path: rendered-brief/valid/one-item.json
+    expect: valid
+  - type: rendered-brief
+    path: rendered-brief/boundary/empty.json
+    expect: valid
+  - type: rendered-brief
+    path: rendered-brief/invalid/missing-source-url.json
+    expect: invalid
+    error_contains: source_url
+
+  # ---------------- delivery-status ----------------
+  - type: delivery-status
+    path: delivery-status/valid/success.json
+    expect: valid
+  - type: delivery-status
+    path: delivery-status/boundary/already-sent.json
+    expect: valid
+  - type: delivery-status
+    path: delivery-status/invalid/failed-without-error.json
+    expect: invalid
+    error_contains: error_ref
+
+  # ---------------- decision-request / result / profile ----------------
+  - type: decision-request
+    path: decision-request/valid/choice.json
+    expect: valid
+  - type: decision-request
+    path: decision-request/invalid/binary-without-options.json
+    expect: invalid
+    error_contains: options
+  - type: decision-result
+    path: decision-result/valid/ok.json
+    expect: valid
+  - type: decision-result
+    path: decision-result/invalid/ok-without-label.json
+    expect: invalid
+    error_contains: label
+  - type: model-profile
+    path: model-profile/valid/stub.json
+    expect: valid
+  - type: model-profile
+    path: model-profile/invalid/active-stub.json
+    expect: invalid
+    error_contains: implementation_kind
+
+  # ---------------- fetch / identity / language ----------------
+  - type: fetch-result
+    path: fetch-result/valid/fetched.json
+    expect: valid
+  - type: fetch-result
+    path: fetch-result/invalid/error-without-state.json
+    expect: invalid
+    error_contains: error
+  - type: source-identity
+    path: source-identity/valid/repost.json
+    expect: valid
+  - type: source-identity
+    path: source-identity/invalid/repost-without-upstream.json
+    expect: invalid
+    error_contains: upstream
+  - type: language-observation
+    path: language-observation/valid/mixed.json
+    expect: valid
+  - type: language-observation
+    path: language-observation/invalid/unknown-with-html-method.json
+    expect: invalid
+    error_contains: method
+
+  # ---------------- feedback / outcome / proposal / diff ----------------
+  - type: feedback-record
+    path: feedback-record/valid/user-stated.json
+    expect: valid
+  - type: feedback-record
+    path: feedback-record/invalid/user-stated-with-action.json
+    expect: invalid
+    error_contains: observed_action
+  - type: outcome-record
+    path: outcome-record/valid/unknown.json
+    expect: valid
+  - type: outcome-record
+    path: outcome-record/invalid/observed-without-evidence.json
+    expect: invalid
+    error_contains: evidence_refs
+  - type: policy-proposal
+    path: policy-proposal/valid/proposal.json
+    expect: valid
+  - type: policy-proposal
+    path: policy-proposal/invalid/active-status.json
+    expect: invalid
+    error_contains: status
+  - type: policy-diff-report
+    path: policy-diff-report/valid/report.json
+    expect: valid
+  - type: policy-diff-report
+    path: policy-diff-report/invalid/decreased-without-squeeze.json
+    expect: invalid
+    error_contains: squeezes
+
+  # ---------------- observation ----------------
+  - type: observation
+    path: observation/valid/source-unstable.json
+    expect: valid
+  - type: observation
+    path: observation/invalid/no-evidence.json
+    expect: invalid
+    error_contains: evidence_refs
+
+  # ---------------- policy-activation ----------------
+  - type: policy-activation
+    path: policy-activation/valid/activated.json
+    expect: valid
+  - type: policy-activation
+    path: policy-activation/invalid/missing-approver.json
+    expect: invalid
+    error_contains: approved_by
+
+  # ---------------- trigger-record ----------------
+  - type: trigger-record
+    path: trigger-record/valid/run.json
+    expect: valid
+  - type: trigger-record
+    path: trigger-record/boundary/misfire-skipped.json
+    expect: valid
+  - type: trigger-record
+    path: trigger-record/invalid/disabled-with-run-id.json
+    expect: invalid
+    error_contains: run_id
+
+  # ---------------- run-manifest ----------------
+  - type: run-manifest
+    path: run-manifest/valid/offline-success.json
+    expect: valid
+  - type: run-manifest
+    path: run-manifest/boundary/stage-failed.json
+    expect: valid
+  - type: run-manifest
+    path: run-manifest/invalid/failed-stage-but-success.json
+    expect: invalid
+    error_contains: run_status
+  - type: run-manifest
+    path: run-manifest/invalid/floating-model-revision.json
+    expect: invalid
+    error_contains: model_revision

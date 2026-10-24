@@ -1,0 +1,36 @@
+{
+  "cross_validation": {
+    "folds": 5,
+    "by_profile": {
+      "user": {
+        "folds": 5,
+        "mean_f1": 0.4908,
+        "stdev_f1": 0.2239,
+        "min_f1": 0.2,
+        "max_f1": 0.8235
+      }
+    }
+  },
+  "threshold": 0.4,
+  "weights": {
+    "direction": 0.2,
+    "value": 0.2,
+    "quality": 0.6,
+    "reduced": 0.0,
+    "direction_floor": 0.25
+  },
+  "mean_f1": 0.6769,
+  "min_f1": 0.6769,
+  "by_profile": {
+    "user": {
+      "items": 55,
+      "positives": 29,
+      "f1": 0.6769
+    }
+  },
+  "fitted_at": "2026-10-18T17:52:29+00:00",
+  "dataset_size": 55,
+  "profiles": [
+    "user"
+  ]
+}

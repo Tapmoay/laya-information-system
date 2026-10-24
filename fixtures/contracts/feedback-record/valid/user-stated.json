@@ -1,0 +1,15 @@
+{
+  "feedback_id": "fb-2026-10-18-0001",
+  "candidate_id": "cand-m1-0001",
+  "delivery_id": "del-run-m1-test",
+  "kind": "USER_STATED",
+  "source": "USER_MESSAGE",
+  "captured_at": "2026-10-18T04:00:00+08:00",
+  "user_stated": {
+    "statement": "这个模型的评测我想跟进一下",
+    "sentiment": "LIKE_FEATURE"
+  },
+  "observed_action": null,
+  "agent_inference": null,
+  "contract_version": "1.0"
+}

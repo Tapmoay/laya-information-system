@@ -1,0 +1,205 @@
+{
+  "dataset_id": "relevance-v2-heldout",
+  "model_profile_id": "MODEL-PROFILE-QWEN25-15B",
+  "model_revision": "dd924a11b4c220f3",
+  "adapter_version": "1.0.0",
+  "evaluated_at": "2026-10-18T05:11:06+00:00",
+  "total": 20,
+  "correct": 5,
+  "accuracy": 0.25,
+  "by_language": {
+    "en": {
+      "total": 10,
+      "correct": 3,
+      "accuracy": 0.3
+    },
+    "zh-Hans": {
+      "total": 10,
+      "correct": 2,
+      "accuracy": 0.2
+    }
+  },
+  "confusion": {
+    "DIRECT": {
+      "DIRECT": 4
+    },
+    "ADJACENT": {
+      "DIRECT": 4
+    },
+    "EXPLORATORY": {
+      "ADJACENT": 2,
+      "DIRECT": 2
+    },
+    "UNRELATED": {
+      "DIRECT": 2,
+      "UNRELATED": 1,
+      "EXPLORATORY": 1
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "DIRECT": 4
+    }
+  },
+  "rows": [
+    {
+      "id": "h-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 14.958
+    },
+    {
+      "id": "h-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.131
+    },
+    {
+      "id": "h-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.105
+    },
+    {
+      "id": "h-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.102
+    },
+    {
+      "id": "h-en-05",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.104
+    },
+    {
+      "id": "h-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.109
+    },
+    {
+      "id": "h-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.106
+    },
+    {
+      "id": "h-zh-08",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.111
+    },
+    {
+      "id": "h-en-09",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.206
+    },
+    {
+      "id": "h-en-10",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.099
+    },
+    {
+      "id": "h-zh-11",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.19
+    },
+    {
+      "id": "h-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.101
+    },
+    {
+      "id": "h-en-13",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.097
+    },
+    {
+      "id": "h-en-14",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.128
+    },
+    {
+      "id": "h-zh-15",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.099
+    },
+    {
+      "id": "h-zh-16",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.179
+    },
+    {
+      "id": "h-en-17",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.096
+    },
+    {
+      "id": "h-en-18",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.097
+    },
+    {
+      "id": "h-zh-19",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.105
+    },
+    {
+      "id": "h-zh-20",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.103
+    }
+  ],
+  "strategy": "fewshot"
+}

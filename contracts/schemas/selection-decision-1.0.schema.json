@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/selection-decision/1.0",
+  "title": "SelectionDecision",
+  "description": "由确定性 Selector 产生的单条选择决定。准入、分量、组合、约束与理由必须分开可见，不得被一个总分吞并（v0.3 §8.5）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "selection_id",
+    "candidate_id",
+    "decided_at",
+    "eligibility",
+    "priority_components",
+    "portfolio",
+    "decision",
+    "reasons",
+    "constraint_checks",
+    "policy_version",
+    "selector_version",
+    "contract_version"
+  ],
+  "properties": {
+    "selection_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "decided_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "ELIGIBLE",
+            "INELIGIBLE",
+            "ABSTAIN"
+          ]
+        },
+        "blocked_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          }
+        }
+      }
+    },
+    "priority_components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "source_measurement_refs"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "TASK",
+              "CAPABILITY",
+              "DECISION",
+              "EXPLORATION",
+              "ENVIRONMENT"
+            ]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null 表示该分量无法计算，绝不能用 0 顶替。"
+          },
+          "source_measurement_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "description": "每个分量都必须能追溯到具体测量记录；没有来源的分量不允许出现。"
+    },
+    "portfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "role"
+      ],
+      "properties": {
+        "channel": {
+          "enum": [
+            "CORE",
+            "EXPLORATION",
+            "VISUAL_MATCH",
+            "VISUAL_EXPLORATION",
+            "NONE"
+          ]
+        },
+        "role": {
+          "enum": [
+            "PRIMARY",
+            "SUPPORTING",
+            "DIVERSITY",
+            "EXPLORATORY",
+            "MONITOR",
+            "NONE"
+          ]
+        }
+      }
+    },
+    "decision": {
+      "enum": [
+        "DELIVER",
+        "MONITOR",
+        "SAVE",
+        "DISCARD",
+        "ABSTAIN"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "DEMAND_MATCH",
+              "NO_DEMAND_MATCH",
+              "EVIDENCE_SUFFICIENT",
+              "EVIDENCE_INSUFFICIENT",
+              "DUPLICATE_SOURCE",
+              "SOURCE_IDENTITY_UNKNOWN",
+              "CAPACITY_LIMIT",
+              "S_LEVEL_BREAKOUT",
+              "EXPLORATION_QUOTA",
+              "POLICY_EXCLUDED",
+              "MEASUREMENT_MISSING",
+              "MEASUREMENT_DEGRADED",
+              "AWAITING_EVIDENCE"
+            ]
+          },
+          "detail_ref": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "constraint_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "constraint_id",
+          "passed"
+        ],
+        "properties": {
+          "constraint_id": {
+            "enum": [
+              "CORE_CAPACITY",
+              "EXPLORATION_CAPACITY",
+              "VISUAL_CAPACITY",
+              "DAILY_TIME_BUDGET",
+              "EXCLUDED_TOPIC",
+              "SOURCE_IDENTITY"
+            ]
+          },
+          "limit": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actual": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selector_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "DELIVER"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "eligibility": {
+            "properties": {
+              "decision": {
+                "const": "ELIGIBLE"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "portfolio": {
+            "properties": {
+              "channel": {
+                "not": {
+                  "const": "NONE"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eligibility": {
+            "properties": {
+              "decision": {
+                "const": "INELIGIBLE"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          }
+        },
+        "required": [
+          "eligibility"
+        ]
+      },
+      "then": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "DISCARD",
+              "ABSTAIN"
+            ]
+          },
+          "eligibility": {
+            "required": [
+              "blocked_reasons"
+            ],
+            "properties": {
+              "blocked_reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "ABSTAIN",
+              "DISCARD"
+            ]
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "portfolio": {
+            "properties": {
+              "channel": {
+                "const": "NONE"
+              },
+              "role": {
+                "const": "NONE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

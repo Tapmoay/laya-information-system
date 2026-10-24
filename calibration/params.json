@@ -1,0 +1,22 @@
+{
+  "threshold": 0.725,
+  "weights": {
+    "value": 0.45,
+    "quality": 0.55,
+    "reduced": 0.1
+  },
+  "mean_f1": 0.75,
+  "min_f1": 0.75,
+  "by_profile": {
+    "ai": {
+      "items": 30,
+      "positives": 12,
+      "f1": 0.75
+    }
+  },
+  "fitted_at": "2026-10-18T07:45:06+00:00",
+  "dataset_size": 30,
+  "profiles": [
+    "ai"
+  ]
+}

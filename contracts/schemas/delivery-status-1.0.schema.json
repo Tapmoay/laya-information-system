@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/delivery-status/1.0",
+  "title": "DeliveryStatus",
+  "description": "推送状态。与 run_status 分开记录：生成成功不等于推送成功（v0.3 §2.3）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "delivery_status_id",
+    "run_id",
+    "delivery_ref",
+    "channel",
+    "idempotency_key",
+    "status",
+    "attempts",
+    "contract_version"
+  ],
+  "properties": {
+    "delivery_status_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "run_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "delivery_ref": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "channel": {
+      "enum": [
+        "FILE",
+        "NONE"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/digest"
+    },
+    "status": {
+      "enum": [
+        "SUCCESS",
+        "ALREADY_SENT",
+        "FAILED",
+        "NOT_ATTEMPTED"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "pushed_at": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "artifact_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error_ref": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "SUCCESS",
+              "ALREADY_SENT"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "pushed_at",
+          "artifact_ref"
+        ],
+        "properties": {
+          "pushed_at": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+          },
+          "artifact_ref": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "FAILED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "error_ref"
+        ],
+        "properties": {
+          "error_ref": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "NOT_ATTEMPTED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "attempts": {
+            "const": 0
+          },
+          "pushed_at": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

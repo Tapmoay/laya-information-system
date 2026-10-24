@@ -1,0 +1,32 @@
+{
+  "brief_id": "brief-del-run-m1-test",
+  "rendered_at": "2026-10-18T03:00:00+08:00",
+  "delivery_ref": "del-run-m1-test",
+  "format": "MARKDOWN",
+  "language_mode": "ZH_TRANSLATION",
+  "title": "个人信息简报 · 2026-10-18",
+  "body_markdown": "# 个人信息简报 · 2026-10-18\n\n> 本轮 1 条\n\n## 核心信息\n\n1. **Strands Decider 2B** · 值得学习\n   [原文](https://example.org/strands-decider-2b)\n",
+  "items": [
+    {
+      "candidate_id": "cand-m1-0001",
+      "priority_rank": 1,
+      "grouping": "CORE",
+      "original_title": {
+        "text": "Strands Decider 2B: typed decision model",
+        "language": "en"
+      },
+      "displayed_title": "Strands Decider 2B: typed decision model",
+      "why": [
+        "sel-cand-m1-0001"
+      ],
+      "caveats": [
+        "译文尚未生成：M1 只交付结构化对象，翻译在呈现层完成"
+      ],
+      "action": "STUDY"
+    }
+  ],
+  "warnings": [
+    "译文尚未生成：显示标题为原文"
+  ],
+  "contract_version": "1.0"
+}

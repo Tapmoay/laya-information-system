@@ -1,0 +1,50 @@
+{
+  "pool_id": "task-pool-example",
+  "updated_at": "2026-01-01T00:00:00+08:00",
+  "note": "示例任务池：同一时刻只启用一个当前任务。用 tools/setup.py 生成你自己的需求快照。",
+  "rule": "任务池只启用一个。启用多个会让“这条能不能帮上当前任务”变成一个糊掉的问题。",
+  "how_to_switch": "python tools/task_switch.py --enable task-ai-agent",
+  "candidates": [
+    {
+      "task_id": "task-ai-agent",
+      "statement": "当前任务：示例任务（换成你正在推进的事）",
+      "state": "ENABLED",
+      "covers_goal": "goal-agent-systems",
+      "source_ref": "demand/demand-2026-01-01.json",
+      "why": "示例任务，用于演示任务池结构与切换命令。",
+      "since": "2026-01-01T00:00:00+08:00"
+    },
+    {
+      "task_id": "task-security-foundation",
+      "statement": "候选任务：安全基础与授权测试入门",
+      "state": "CANDIDATE",
+      "covers_goal": "goal-agent-systems",
+      "source_ref": "demand/demand-2026-01-01.json",
+      "why": "示例候选，说明任务可以轮换。"
+    },
+    {
+      "task_id": "task-system-build",
+      "statement": "候选任务：把想法搭成能跑的原型",
+      "state": "CANDIDATE",
+      "covers_goal": "goal-agent-systems",
+      "source_ref": "demand/demand-2026-01-01.json",
+      "why": "示例候选。"
+    },
+    {
+      "task_id": "task-ai-project",
+      "statement": "候选任务：模型、工具链与评测",
+      "state": "CANDIDATE",
+      "covers_goal": "goal-agent-systems",
+      "source_ref": "demand/demand-2026-01-01.json",
+      "why": "示例候选。"
+    },
+    {
+      "task_id": "task-virtual-intelligence",
+      "statement": "候选任务：虚拟角色与互动体验",
+      "state": "CANDIDATE",
+      "covers_goal": "goal-visual-narrative",
+      "source_ref": "demand/demand-2026-01-01.json",
+      "why": "示例候选。"
+    }
+  ]
+}

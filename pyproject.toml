@@ -1,0 +1,22 @@
+[project]
+name = "laya-information-system"
+version = "0.1.0"
+description = "Personal Information Environment — 定时批处理式个人信息决策系统"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.9",
+    "PyYAML>=6.0",
+    "jsonschema>=4.20",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

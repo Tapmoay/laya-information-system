@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/delivery-object/1.0",
+  "title": "DeliveryObject",
+  "description": "结构化交付对象。呈现层只能表达它，不得重新筛选、改排名或新增事实（v0.3 §8.6）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "delivery_id",
+    "built_at",
+    "selection_refs",
+    "items",
+    "delivery_language_mode",
+    "contract_version"
+  ],
+  "properties": {
+    "delivery_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "built_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "selection_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "candidate_id",
+          "priority_rank",
+          "grouping",
+          "source_url",
+          "original_title",
+          "delivery_language_mode",
+          "recommended_action"
+        ],
+        "properties": {
+          "candidate_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "priority_rank": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "grouping": {
+            "enum": [
+              "CORE",
+              "EXPLORATION",
+              "VISUAL_MATCH",
+              "VISUAL_EXPLORATION"
+            ]
+          },
+          "source_url": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+          },
+          "original_title": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "language"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "language": {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+              }
+            }
+          },
+          "rendered_title": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "delivery_language_mode": {
+            "enum": [
+              "ZH_TRANSLATION",
+              "ORIGINAL",
+              "BILINGUAL"
+            ]
+          },
+          "rationale_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+            },
+            "uniqueItems": true
+          },
+          "required_caveats": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 300
+            }
+          },
+          "recommended_action": {
+            "enum": [
+              "APPLY",
+              "STUDY",
+              "VERIFY",
+              "MONITOR",
+              "SAVE",
+              "DISCARD"
+            ]
+          }
+        }
+      }
+    },
+    "delivery_language_mode": {
+      "enum": [
+        "ZH_TRANSLATION",
+        "ORIGINAL",
+        "BILINGUAL"
+      ]
+    },
+    "empty_reason": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code"
+          ],
+          "properties": {
+            "code": {
+              "enum": [
+                "NO_ELIGIBLE_CANDIDATES",
+                "ALL_MEASUREMENTS_ABSTAINED",
+                "CAPACITY_ZERO",
+                "SOURCE_FAILURE"
+              ]
+            },
+            "detail_ref": {
+              "oneOf": [
+                {
+                  "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "items": {
+            "maxItems": 0
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "then": {
+        "required": [
+          "empty_reason"
+        ],
+        "properties": {
+          "empty_reason": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "items": {
+            "minItems": 1
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "then": {
+        "properties": {
+          "empty_reason": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

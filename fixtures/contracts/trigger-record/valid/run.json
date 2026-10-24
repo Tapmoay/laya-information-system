@@ -1,0 +1,13 @@
+{
+  "trigger_id": "trg-20261018090000",
+  "decided_at": "2026-10-18T09:00:00+08:00",
+  "action": "RUN",
+  "scheduled_for": "2026-10-18T09:00:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "calendar_rule": "0 9 * * *",
+  "misfire": false,
+  "misfire_policy": "RUN_ONCE",
+  "reason": "到达计划时刻",
+  "run_id": "run-sched-202610180900",
+  "contract_version": "1.0"
+}

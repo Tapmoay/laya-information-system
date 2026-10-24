@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/fetch-result/1.0",
+  "title": "FetchResult",
+  "description": "一次抓取的结果。只描述取数动作与拿到的原始字段，不做语言判断、不做身份推断（CAP-INF-02 的输出）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "requested_url",
+    "final_url",
+    "outcome",
+    "fetched_at",
+    "status_code",
+    "body_ref",
+    "error",
+    "contract_version"
+  ],
+  "properties": {
+    "request_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "requested_url": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+    },
+    "final_url": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+    },
+    "outcome": {
+      "enum": [
+        "FETCHED",
+        "PARTIAL_FETCH",
+        "ERROR"
+      ]
+    },
+    "status_code": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fetched_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "body_ref": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 200000,
+      "description": "抽取后的正文或摘要；受限内容只存允许的片段。"
+    },
+    "title": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "excerpt": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "published_at_raw": {
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "declared_language": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "canonical_link": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "author_name": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "site_name": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/state"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "ERROR"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "ERROR"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "FETCHED",
+              "PARTIAL_FETCH"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "required": [
+          "body_ref"
+        ],
+        "properties": {
+          "body_ref": {
+            "type": "string"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

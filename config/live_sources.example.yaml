@@ -1,0 +1,24 @@
+# 在线来源配置。默认只允许本机，用于演示与测试。
+# 真实使用时：把 allowed_hosts 换成你确认允许抓取的域名，urls 换成具体页面。
+sources:
+  allowed_hosts:
+    - "127.0.0.1"
+  timeout_seconds: 10
+  max_attempts: 3
+  max_bytes: 2000000
+  respect_robots: true
+  retry_backoff_seconds: 0.05
+  urls:
+    - "http://127.0.0.1:8000/article.html"
+
+run:
+  demand_path: "fixtures/m1/basic/demand-snapshot.json"
+  policy_config_path: "fixtures/m1/basic/policy-config.json"
+  model_profile_id: "MODEL-PROFILE-STUB-AGENT"
+  judgment_language: "en"
+  discovery_method: "MANUAL"
+  # 只有测试桩时才允许 true；接真实模型前必须改成 false 并走评测流程
+  allow_unvalidated: true
+  push:
+    channel: file
+    target: "runs/outbox"

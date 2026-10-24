@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/language-observation/1.0",
+  "title": "LanguageObservation",
+  "description": "语种识别结果与所用方法。混合语种或无法判定时必须显式表达（CAP-INF-05 的输出）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_id",
+    "tag",
+    "method",
+    "confidence",
+    "contract_version"
+  ],
+  "properties": {
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "tag": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+    },
+    "method": {
+      "enum": [
+        "HTML_LANG",
+        "CONTENT_HEURISTIC",
+        "MODEL",
+        "MANUAL",
+        "UNKNOWN"
+      ]
+    },
+    "confidence": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "alternatives": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+      },
+      "uniqueItems": true
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tag": {
+            "const": "UNKNOWN"
+          }
+        },
+        "required": [
+          "tag"
+        ]
+      },
+      "then": {
+        "properties": {
+          "method": {
+            "const": "UNKNOWN"
+          },
+          "confidence": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

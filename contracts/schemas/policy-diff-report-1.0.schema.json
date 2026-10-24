@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/policy-diff-report/1.0",
+  "title": "PolicyDiffReport",
+  "description": "离线规则对照：变更前后哪些候选变了、哪些通道被挤压（v0.3 WP-R9）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_id",
+    "proposal_ref",
+    "evaluated_at",
+    "baseline_policy_version",
+    "candidate_policy_version",
+    "affected_candidates",
+    "channel_deltas",
+    "improvements",
+    "squeezes",
+    "contract_version"
+  ],
+  "properties": {
+    "report_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "proposal_ref": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evaluated_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "baseline_policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "affected_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "candidate_id",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "candidate_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "before": {
+            "enum": [
+              "DELIVER",
+              "MONITOR",
+              "SAVE",
+              "DISCARD",
+              "ABSTAIN"
+            ]
+          },
+          "after": {
+            "enum": [
+              "DELIVER",
+              "MONITOR",
+              "SAVE",
+              "DISCARD",
+              "ABSTAIN"
+            ]
+          },
+          "from_channel": {
+            "enum": [
+              "CORE",
+              "EXPLORATION",
+              "VISUAL_MATCH",
+              "VISUAL_EXPLORATION",
+              "NONE"
+            ]
+          },
+          "to_channel": {
+            "enum": [
+              "CORE",
+              "EXPLORATION",
+              "VISUAL_MATCH",
+              "VISUAL_EXPLORATION",
+              "NONE"
+            ]
+          }
+        }
+      }
+    },
+    "channel_deltas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "channel",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "channel": {
+            "enum": [
+              "CORE",
+              "EXPLORATION",
+              "VISUAL_MATCH",
+              "VISUAL_EXPLORATION"
+            ]
+          },
+          "before": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "after": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "improvements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "squeezes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  }
+}

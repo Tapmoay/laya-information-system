@@ -1,0 +1,61 @@
+{
+  "candidate_id": "cand-m1-0004",
+  "title": {
+    "text": "AI 将彻底取代所有工作，你再不学就完了",
+    "language": "zh-Hans"
+  },
+  "candidate_type": "ARTICLE",
+  "canonical_url": "https://example.org/clickbait",
+  "publisher": {
+    "name": "example.org",
+    "identity_status": "PROBABLE"
+  },
+  "upstream": null,
+  "observed_at": "2026-10-18T02:50:00+08:00",
+  "published_at": {
+    "value": "2026-10-17T12:00:00Z",
+    "state": {
+      "status": "OK"
+    }
+  },
+  "source_language": {
+    "tag": "zh-Hans",
+    "method": "HTML_LANG",
+    "confidence": 0.97
+  },
+  "content": {
+    "digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "text_ref": "store/raw/cand-m1-0004.txt",
+    "byte_length": 12000,
+    "storage_policy": "LICENSED_EXCERPT",
+    "excerpt_ref": null
+  },
+  "raw_claims": [
+    {
+      "claim_id": "cand-m1-0004-claim-1",
+      "text": "全部工作都会在一年内消失",
+      "evidence_refs": [
+        "store/raw/cand-m1-0004.txt#L10-L20"
+      ]
+    }
+  ],
+  "discovery": {
+    "method": "SEARCH",
+    "discovered_at": "2026-10-18T02:50:00+08:00",
+    "query_ref": "q-m1",
+    "monitoring_profile_ref": null
+  },
+  "retrieval": {
+    "outcome": "FETCHED",
+    "attempted_at": "2026-10-18T02:50:00+08:00",
+    "http_status": 200,
+    "attempts": 1,
+    "state": null
+  },
+  "source_availability": {
+    "outcome": "REACHABLE",
+    "checked_at": "2026-10-18T02:50:00+08:00",
+    "redirect_target": null
+  },
+  "contract_version": "1.0"
+}

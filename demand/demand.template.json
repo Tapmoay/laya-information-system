@@ -1,0 +1,43 @@
+{
+  "demand_snapshot_id": "demand-{{YYYY-MM-DD}}",
+  "created_at": "{{ISO-8601 带时区}}",
+  "policy_bundle_ref": "policy/policy-template.md",
+  "active_goals": [
+    {
+      "goal_id": "goal-primary",
+      "statement": "{{ 长期方向一 }}",
+      "state": "ACTIVE_EXPLICIT",
+      "source_ref": "policy#1.1"
+    },
+    {
+      "goal_id": "goal-secondary",
+      "statement": "{{ 长期方向二 }}",
+      "state": "ACTIVE_EXPLICIT",
+      "source_ref": "policy#1.1"
+    }
+  ],
+  "active_tasks": [
+    {
+      "task_id": "task-current",
+      "statement": "{{ 当前任务 }}",
+      "status": "ACTIVE",
+      "source_ref": "policy#1.2"
+    }
+  ],
+  "exploration_intent": {
+    "enabled": true,
+    "max_items": 2,
+    "domains_hint": [
+      "{{ 抽象概念在其他领域中的体现 }}"
+    ],
+    "notes": "跨领域不是固定学科清单"
+  },
+  "constraints": {
+    "daily_information_budget_minutes": 30,
+    "energy_state": "NORMAL"
+  },
+  "state": {
+    "status": "OK"
+  },
+  "contract_version": "1.0"
+}

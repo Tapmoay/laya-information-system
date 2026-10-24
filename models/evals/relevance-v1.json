@@ -1,0 +1,160 @@
+{
+  "dataset_id": "relevance-v1",
+  "label_set": "RELEVANCE/1.0",
+  "capability_id": "CAP-MEA-02",
+  "created_at": "2026-10-18",
+  "note": "人工标注的小样本评测集：每个标签 5 条，中英各半。用于判断模型能否承担 CAP-MEA-02，不用于训练。",
+  "demand_context": "当前目标：构建一个个人信息决策系统，关注 AI 技术变化（智能体、小模型、评测、工具链）与视觉/叙事设计。",
+  "items": [
+    {
+      "id": "rel-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "text": "A new open-source framework for tool-using LLM agents ships typed decision objects and a policy engine, with benchmarks on multi-step planning."
+    },
+    {
+      "id": "rel-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "text": "Researchers publish evals showing that small instruction-tuned models can label relevance as reliably as larger ones when given a fixed rubric."
+    },
+    {
+      "id": "rel-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "text": "某团队发布中文信息筛选管线的开源实现，包含候选规范化、测量与选择三段，并给出可复现的评测脚本。"
+    },
+    {
+      "id": "rel-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "text": "一篇工程博客详细说明了如何用 JSON Schema 约束大模型的输出，并给出校验失败时的降级策略。"
+    },
+    {
+      "id": "rel-en-05",
+      "language": "en",
+      "expected": "DIRECT",
+      "text": "A release adds deterministic deduplication and source-identity checks to a content ingestion pipeline, with tests for near-duplicate URLs."
+    },
+    {
+      "id": "rel-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "text": "A study on retrieval-augmented generation evaluates chunking strategies and reports latency tradeoffs for local inference."
+    },
+    {
+      "id": "rel-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "text": "一篇关于提示词工程的文章总结了结构化输出失败的常见原因，并给出几种模板写法。"
+    },
+    {
+      "id": "rel-en-08",
+      "language": "en",
+      "expected": "ADJACENT",
+      "text": "A robotics lab describes a scheduler that batches inference jobs to keep GPU utilization high without starving interactive requests."
+    },
+    {
+      "id": "rel-zh-09",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "text": "某设计团队分享信息可视化中的层级与留白原则，附有大量排版示例。"
+    },
+    {
+      "id": "rel-en-10",
+      "language": "en",
+      "expected": "ADJACENT",
+      "text": "An article explains how to structure a personal knowledge base with stable identifiers and incremental review cycles."
+    },
+    {
+      "id": "rel-en-11",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "text": "A documentary about typography in 1970s Swiss posters discusses grid systems and restraint as a design philosophy."
+    },
+    {
+      "id": "rel-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "text": "一篇讲建筑光影与叙事节奏的长文，讨论了空间序列如何影响人的情绪。"
+    },
+    {
+      "id": "rel-en-13",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "text": "An essay on jazz improvisation argues that constrained vocabularies produce more coherent solos than unlimited freedom."
+    },
+    {
+      "id": "rel-zh-14",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "text": "某游戏美术团队谈色彩分级如何服务叙事，附有前后对比截图。"
+    },
+    {
+      "id": "rel-en-15",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "text": "A field guide to tide pools explains how organisms survive rapid environmental change."
+    },
+    {
+      "id": "rel-en-16",
+      "language": "en",
+      "expected": "UNRELATED",
+      "text": "A bakery in Lisbon publishes a sourdough recipe with photos of bread and a short history of the shop."
+    },
+    {
+      "id": "rel-zh-17",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "text": "某城市发布了新的公交线路调整通知，附有站点列表与首末班时间。"
+    },
+    {
+      "id": "rel-en-18",
+      "language": "en",
+      "expected": "UNRELATED",
+      "text": "A sports report covers a football match with goals, injuries and post-game interviews."
+    },
+    {
+      "id": "rel-zh-19",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "text": "一篇旅游攻略介绍某海岛的最佳季节、住宿价格与潜水点。"
+    },
+    {
+      "id": "rel-en-20",
+      "language": "en",
+      "expected": "UNRELATED",
+      "text": "A product page sells a stainless steel water bottle with a lifetime warranty and free shipping."
+    },
+    {
+      "id": "rel-en-21",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "New release."
+    },
+    {
+      "id": "rel-zh-22",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "更新了。"
+    },
+    {
+      "id": "rel-en-23",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "Click here for more information about this topic."
+    },
+    {
+      "id": "rel-zh-24",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "详见附件。"
+    },
+    {
+      "id": "rel-en-25",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "Coming soon: something important."
+    }
+  ]
+}

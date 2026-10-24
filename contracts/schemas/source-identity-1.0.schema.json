@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/source-identity/1.0",
+  "title": "SourceIdentity",
+  "description": "候选的来源身份链：发布者与实际上游分开表达，证据不足保持 UNKNOWN（CAP-INF-04 的输出）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_identity_id",
+    "candidate_id",
+    "publisher",
+    "upstream",
+    "relation",
+    "evidence_refs",
+    "contract_version"
+  ],
+  "properties": {
+    "source_identity_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "publisher": {
+      "$ref": "#/$defs/identity"
+    },
+    "upstream": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/identity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relation": {
+      "enum": [
+        "ORIGINAL",
+        "REPOST",
+        "UNKNOWN"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "relation": {
+            "const": "REPOST"
+          }
+        },
+        "required": [
+          "relation"
+        ]
+      },
+      "then": {
+        "required": [
+          "upstream"
+        ],
+        "properties": {
+          "upstream": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "relation": {
+            "const": "ORIGINAL"
+          }
+        },
+        "required": [
+          "relation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "upstream": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_status"
+      ],
+      "properties": {
+        "name": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identity_status": {
+          "enum": [
+            "CONFIRMED",
+            "PROBABLE",
+            "UNKNOWN"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "identity_status": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "identity_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "name",
+              "evidence_refs"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

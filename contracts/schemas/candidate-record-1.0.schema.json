@@ -1,0 +1,502 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/candidate-record/1.0",
+  "title": "CandidateRecord",
+  "description": "发现的候选。存在不代表已被核实，也不代表值得推荐（v0.3 §8.3）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_id",
+    "title",
+    "candidate_type",
+    "canonical_url",
+    "publisher",
+    "observed_at",
+    "source_language",
+    "content",
+    "discovery",
+    "retrieval",
+    "source_availability",
+    "contract_version"
+  ],
+  "properties": {
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "title": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "language"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "language": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+        }
+      },
+      "description": "原文标题原样保存；译文标题属于 TextRepresentation，不得覆盖此字段。"
+    },
+    "candidate_type": {
+      "enum": [
+        "ARTICLE",
+        "PAPER",
+        "PROJECT",
+        "PRODUCT_UPDATE",
+        "DATASET",
+        "DISCUSSION",
+        "ARTWORK",
+        "OTHER"
+      ]
+    },
+    "canonical_url": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+    },
+    "publisher": {
+      "$ref": "#/$defs/source_identity"
+    },
+    "upstream": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/source_identity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "实际上游来源。与 publisher 分开表达：转载站不能自动冒充原始发布者。"
+    },
+    "observed_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "published_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/observed_time"
+    },
+    "source_language": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "method"
+      ],
+      "properties": {
+        "tag": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+        },
+        "method": {
+          "enum": [
+            "HTML_LANG",
+            "CONTENT_HEURISTIC",
+            "MODEL",
+            "MANUAL",
+            "UNKNOWN"
+          ]
+        },
+        "confidence": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "tag": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "tag"
+            ]
+          },
+          "then": {
+            "properties": {
+              "method": {
+                "const": "UNKNOWN"
+              }
+            }
+          }
+        }
+      ],
+      "description": "语言识别必须记录方法；tag=UNKNOWN 时 method 必须是 UNKNOWN。"
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest",
+        "text_ref"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/digest"
+        },
+        "text_ref": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+        },
+        "excerpt_ref": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storage_policy": {
+          "enum": [
+            "FULL_TEXT",
+            "LICENSED_EXCERPT",
+            "LINK_ONLY"
+          ]
+        }
+      }
+    },
+    "raw_claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      },
+      "description": "候选中出现的主张。主张不是事实，必须带证据引用或明确标注缺证据。"
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "discovered_at"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "SEARCH",
+            "FEED",
+            "MANUAL",
+            "REFERRAL",
+            "EXPLORATION"
+          ]
+        },
+        "discovered_at": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        "query_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "monitoring_profile_ref": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "retrieval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "attempted_at"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "FETCHED",
+            "PARTIAL_FETCH",
+            "NOT_FETCHED",
+            "ERROR"
+          ]
+        },
+        "attempted_at": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        "http_status": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "state": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/state"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "ERROR"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "ERROR"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "FETCHED",
+                  "PARTIAL_FETCH",
+                  "NOT_FETCHED"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "description": "retrieval 描述本轮取数动作，不等同于来源本身的状态。"
+    },
+    "source_availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "checked_at"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "REACHABLE",
+            "GONE",
+            "REDIRECTED",
+            "PAYWALLED",
+            "UNKNOWN"
+          ]
+        },
+        "checked_at": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        "redirect_target": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/http_url"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "REDIRECTED"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "required": [
+              "redirect_target"
+            ]
+          }
+        }
+      ],
+      "description": "source_availability 描述来源本身，与 retrieval 正交：可以取数成功但来源已重定向（C-10）。"
+    },
+    "contract_version": {
+      "const": "1.0"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "$defs": {
+    "source_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_status"
+      ],
+      "properties": {
+        "name": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identity_status": {
+          "enum": [
+            "CONFIRMED",
+            "PROBABLE",
+            "UNKNOWN"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "identity_status": {
+                "const": "CONFIRMED"
+              }
+            },
+            "required": [
+              "identity_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "name",
+              "evidence_refs"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "identity_status": {
+                "const": "PROBABLE"
+              }
+            },
+            "required": [
+              "identity_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ],
+      "description": "CONFIRMED 必须有名称和至少一条证据；证据不足只能标 UNKNOWN（政策 §5.3、v0.3 §4 责任分工）。"
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "text"
+      ],
+      "properties": {
+        "claim_id": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 2000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

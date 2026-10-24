@@ -1,0 +1,6 @@
+# 推送配置示例。默认不推送：channel=none 时 PUSH 阶段直接跳过。
+# file 通道写到本地目录，带 jsonl 幂等账本；真实消息渠道要等凭据与频率策略确定后再接。
+delivery:
+  channel: none          # none | file
+  target: runs/outbox
+  max_attempts: 3

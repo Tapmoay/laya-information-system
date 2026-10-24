@@ -1,0 +1,248 @@
+{
+  "dataset_id": "relevance-v1",
+  "model_profile_id": "MODEL-PROFILE-QWEN25-3B",
+  "model_revision": "72629def1f9e04ae",
+  "adapter_version": "1.0.0",
+  "evaluated_at": "2026-10-18T04:59:15+00:00",
+  "total": 25,
+  "correct": 16,
+  "accuracy": 0.64,
+  "by_language": {
+    "en": {
+      "total": 15,
+      "correct": 8,
+      "accuracy": 0.5333
+    },
+    "zh-Hans": {
+      "total": 10,
+      "correct": 8,
+      "accuracy": 0.8
+    }
+  },
+  "confusion": {
+    "DIRECT": {
+      "DIRECT": 4,
+      "ADJACENT": 1
+    },
+    "ADJACENT": {
+      "DIRECT": 2,
+      "ADJACENT": 2,
+      "EXPLORATORY": 1
+    },
+    "EXPLORATORY": {
+      "EXPLORATORY": 3,
+      "ADJACENT": 2
+    },
+    "UNRELATED": {
+      "UNRELATED": 5
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "UNRELATED": 2,
+      "INSUFFICIENT_EVIDENCE": 2,
+      "EXPLORATORY": 1
+    }
+  },
+  "rows": [
+    {
+      "id": "rel-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 17.852
+    },
+    {
+      "id": "rel-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.125
+    },
+    {
+      "id": "rel-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.116
+    },
+    {
+      "id": "rel-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.113
+    },
+    {
+      "id": "rel-en-05",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.227
+    },
+    {
+      "id": "rel-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.117
+    },
+    {
+      "id": "rel-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.231
+    },
+    {
+      "id": "rel-en-08",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.114
+    },
+    {
+      "id": "rel-zh-09",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.232
+    },
+    {
+      "id": "rel-en-10",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.227
+    },
+    {
+      "id": "rel-en-11",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.229
+    },
+    {
+      "id": "rel-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.251
+    },
+    {
+      "id": "rel-en-13",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.23
+    },
+    {
+      "id": "rel-zh-14",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.241
+    },
+    {
+      "id": "rel-en-15",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.225
+    },
+    {
+      "id": "rel-en-16",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.156
+    },
+    {
+      "id": "rel-zh-17",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.156
+    },
+    {
+      "id": "rel-en-18",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.149
+    },
+    {
+      "id": "rel-zh-19",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.148
+    },
+    {
+      "id": "rel-en-20",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.149
+    },
+    {
+      "id": "rel-en-21",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.149
+    },
+    {
+      "id": "rel-zh-22",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.289
+    },
+    {
+      "id": "rel-en-23",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.22
+    },
+    {
+      "id": "rel-zh-24",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.3
+    },
+    {
+      "id": "rel-en-25",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.147
+    }
+  ],
+  "strategy": "fewshot"
+}

@@ -1,0 +1,49 @@
+{
+  "demand_snapshot_id": "demand-example",
+  "created_at": "2026-01-01T00:00:00+08:00",
+  "policy_bundle_ref": "information-policy.md",
+  "active_goals": [
+    {
+      "goal_id": "goal-agent-systems",
+      "statement": "主方向：示例领域 A（换成你自己的长期方向）",
+      "state": "ACTIVE_EXPLICIT",
+      "source_ref": "config/USER.md"
+    },
+    {
+      "goal_id": "goal-visual-narrative",
+      "statement": "第二方向：示例领域 B（可留空）",
+      "state": "ACTIVE_EXPLICIT",
+      "source_ref": "config/USER.md"
+    }
+  ],
+  "inferred_goals": [],
+  "active_tasks": [
+    {
+      "task_id": "task-ai-agent",
+      "statement": "当前任务：示例任务（换成你正在推进的事）",
+      "status": "ACTIVE",
+      "source_ref": "config/USER.md"
+    }
+  ],
+  "capability_gaps": [],
+  "constraints": {
+    "daily_information_budget_minutes": 30,
+    "energy_state": "NORMAL"
+  },
+  "exploration_intent": {
+    "enabled": true,
+    "max_items": 2,
+    "domains_hint": [
+      "跨领域线索：同一抽象概念在别的领域里的体现"
+    ],
+    "notes": "跨领域不是固定学科清单；关联度越高越优先"
+  },
+  "assumptions": [
+    "示例需求：使用前请用 tools/setup.py 生成你自己的 demand 快照"
+  ],
+  "unknowns": [],
+  "state": {
+    "status": "OK"
+  },
+  "contract_version": "1.0"
+}

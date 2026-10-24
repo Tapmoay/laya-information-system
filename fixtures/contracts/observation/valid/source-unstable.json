@@ -1,0 +1,12 @@
+{
+  "code": "SOURCE_UNSTABLE",
+  "summary": "最近 5 轮里有 3 轮抓取不完整，来源稳定性正在拖累链路",
+  "severity": "WARN",
+  "evidence_refs": [
+    "runs/run-1/run-manifest.json",
+    "runs/run-2/run-manifest.json",
+    "runs/run-3/run-manifest.json"
+  ],
+  "window": 5,
+  "contract_version": "1.0"
+}

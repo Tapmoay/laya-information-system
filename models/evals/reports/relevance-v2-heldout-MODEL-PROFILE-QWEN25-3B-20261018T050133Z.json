@@ -1,0 +1,208 @@
+{
+  "dataset_id": "relevance-v2-heldout",
+  "model_profile_id": "MODEL-PROFILE-QWEN25-3B",
+  "model_revision": "72629def1f9e04ae",
+  "adapter_version": "1.0.0",
+  "evaluated_at": "2026-10-18T05:01:33+00:00",
+  "total": 20,
+  "correct": 7,
+  "accuracy": 0.35,
+  "by_language": {
+    "en": {
+      "total": 10,
+      "correct": 2,
+      "accuracy": 0.2
+    },
+    "zh-Hans": {
+      "total": 10,
+      "correct": 5,
+      "accuracy": 0.5
+    }
+  },
+  "confusion": {
+    "DIRECT": {
+      "ABSTAIN": 1,
+      "ADJACENT": 2,
+      "DIRECT": 1
+    },
+    "ADJACENT": {
+      "DIRECT": 1,
+      "ABSTAIN": 1,
+      "ADJACENT": 2
+    },
+    "EXPLORATORY": {
+      "EXPLORATORY": 4
+    },
+    "UNRELATED": {
+      "EXPLORATORY": 3,
+      "ABSTAIN": 1
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "EXPLORATORY": 3,
+      "ABSTAIN": 1
+    }
+  },
+  "rows": [
+    {
+      "id": "h-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ABSTAIN",
+      "status": "ABSTAIN",
+      "seconds": 15.053
+    },
+    {
+      "id": "h-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.475
+    },
+    {
+      "id": "h-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.392
+    },
+    {
+      "id": "h-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.487
+    },
+    {
+      "id": "h-en-05",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.314
+    },
+    {
+      "id": "h-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "ABSTAIN",
+      "status": "ABSTAIN",
+      "seconds": 0.536
+    },
+    {
+      "id": "h-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.46
+    },
+    {
+      "id": "h-zh-08",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.462
+    },
+    {
+      "id": "h-en-09",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.541
+    },
+    {
+      "id": "h-en-10",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.535
+    },
+    {
+      "id": "h-zh-11",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.541
+    },
+    {
+      "id": "h-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.546
+    },
+    {
+      "id": "h-en-13",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.529
+    },
+    {
+      "id": "h-en-14",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.531
+    },
+    {
+      "id": "h-zh-15",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "ABSTAIN",
+      "status": "ABSTAIN",
+      "seconds": 0.532
+    },
+    {
+      "id": "h-zh-16",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.529
+    },
+    {
+      "id": "h-en-17",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.544
+    },
+    {
+      "id": "h-en-18",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "ABSTAIN",
+      "status": "ABSTAIN",
+      "seconds": 0.54
+    },
+    {
+      "id": "h-zh-19",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.533
+    },
+    {
+      "id": "h-zh-20",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.554
+    }
+  ],
+  "strategy": "rationale"
+}

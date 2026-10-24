@@ -1,0 +1,415 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/run-manifest/1.0",
+  "title": "RunManifest",
+  "description": "单轮运行清单。run 状态与 delivery 状态必须分开记录（v0.3 §2.3、§8.9）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "trigger",
+    "started_at",
+    "timezone",
+    "policy_version",
+    "contract_versions",
+    "model_revisions",
+    "stages",
+    "run_status",
+    "delivery_status",
+    "counts",
+    "contract_version"
+  ],
+  "properties": {
+    "run_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "trigger": {
+      "enum": [
+        "SCHEDULE",
+        "MANUAL",
+        "RETRY",
+        "TEST"
+      ]
+    },
+    "planned_at": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "started_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "finished_at": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 60,
+      "description": "必须显式记录，不依赖主机隐式时区。"
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_versions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9]+\\.[0-9]+$"
+      }
+    },
+    "model_revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_profile_id",
+          "model_revision"
+        ],
+        "properties": {
+          "model_profile_id": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+          },
+          "model_revision": {
+            "type": "string",
+            "pattern": "^(?!.*(latest|main|master)).+$",
+            "minLength": 4,
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "status"
+        ],
+        "properties": {
+          "stage": {
+            "enum": [
+              "PRECHECK",
+              "DEMAND_BUILD",
+              "DISCOVERY",
+              "NORMALIZATION",
+              "MEASUREMENT",
+              "SELECTION",
+              "DELIVERY_BUILD",
+              "PUSH",
+              "PERSIST_RUN_REPORT",
+              "RELEASE_RESOURCES"
+            ]
+          },
+          "status": {
+            "enum": [
+              "OK",
+              "PARTIAL",
+              "FAILED",
+              "SKIPPED",
+              "BLOCKED"
+            ]
+          },
+          "started_at": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "finished_at": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error_ref": {
+            "oneOf": [
+              {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "run_status": {
+      "enum": [
+        "SUCCESS",
+        "PARTIAL",
+        "FAILED",
+        "ABORTED"
+      ]
+    },
+    "delivery_status": {
+      "enum": [
+        "NOT_ATTEMPTED",
+        "SUCCESS",
+        "FAILED",
+        "SKIPPED"
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidates",
+        "measurements",
+        "selected",
+        "delivered"
+      ],
+      "properties": {
+        "candidates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "measurements": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "delivered": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 400
+      }
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stages": {
+            "contains": {
+              "properties": {
+                "status": {
+                  "const": "FAILED"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "stages"
+        ]
+      },
+      "then": {
+        "properties": {
+          "run_status": {
+            "const": "FAILED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stages": {
+            "allOf": [
+              {
+                "not": {
+                  "contains": {
+                    "properties": {
+                      "status": {
+                        "const": "FAILED"
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ]
+                  }
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "status": {
+                      "const": "PARTIAL"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "stages"
+        ]
+      },
+      "then": {
+        "properties": {
+          "run_status": {
+            "enum": [
+              "PARTIAL",
+              "ABORTED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stages": {
+            "not": {
+              "contains": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "FAILED",
+                      "PARTIAL",
+                      "BLOCKED"
+                    ]
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "stages"
+        ]
+      },
+      "then": {
+        "properties": {
+          "run_status": {
+            "const": "SUCCESS"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stages": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "status": {
+                      "const": "BLOCKED"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "contains": {
+                    "properties": {
+                      "status": {
+                        "const": "FAILED"
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "stages"
+        ]
+      },
+      "then": {
+        "properties": {
+          "run_status": {
+            "enum": [
+              "PARTIAL",
+              "FAILED",
+              "ABORTED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "delivery_status": {
+            "const": "SUCCESS"
+          }
+        },
+        "required": [
+          "delivery_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "stages": {
+            "contains": {
+              "properties": {
+                "stage": {
+                  "const": "PUSH"
+                },
+                "status": {
+                  "const": "OK"
+                }
+              },
+              "required": [
+                "stage",
+                "status"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

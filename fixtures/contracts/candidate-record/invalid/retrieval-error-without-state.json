@@ -1,0 +1,61 @@
+{
+  "candidate_id": "cand-2026-10-18-0001",
+  "title": {
+    "text": "Strands Decider 2B: typed decision model",
+    "language": "en"
+  },
+  "candidate_type": "PRODUCT_UPDATE",
+  "canonical_url": "https://example.org/strands-decider-2b",
+  "publisher": {
+    "name": "example.org",
+    "identity_status": "PROBABLE"
+  },
+  "upstream": null,
+  "observed_at": "2026-10-18T00:30:00+08:00",
+  "published_at": {
+    "value": "2026-10-17T12:00:00Z",
+    "state": {
+      "status": "OK"
+    }
+  },
+  "source_language": {
+    "tag": "en",
+    "method": "HTML_LANG",
+    "confidence": 0.98
+  },
+  "content": {
+    "digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "text_ref": "store/raw/cand-0001.txt",
+    "byte_length": 48213,
+    "storage_policy": "LICENSED_EXCERPT",
+    "excerpt_ref": null
+  },
+  "raw_claims": [
+    {
+      "claim_id": "claim-0001",
+      "text": "2B 模型在 JevBench 上取得 180/231",
+      "evidence_refs": [
+        "store/raw/cand-0001.txt#L12-L18"
+      ]
+    }
+  ],
+  "discovery": {
+    "method": "SEARCH",
+    "discovered_at": "2026-10-17T23:50:00+08:00",
+    "query_ref": "q-0007",
+    "monitoring_profile_ref": "mp-2026-10-18"
+  },
+  "retrieval": {
+    "outcome": "ERROR",
+    "attempted_at": "2026-10-18T00:10:00+08:00",
+    "http_status": 503,
+    "attempts": 3,
+    "state": null
+  },
+  "source_availability": {
+    "outcome": "REACHABLE",
+    "checked_at": "2026-10-18T00:11:00+08:00",
+    "redirect_target": null
+  },
+  "contract_version": "1.0"
+}

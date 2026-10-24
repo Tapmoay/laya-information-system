@@ -1,0 +1,30 @@
+{
+  "proposal_id": "prop-2026-10-18-01",
+  "rule_id": "RULE-MONITOR-MATURITY",
+  "status": "PROPOSED",
+  "rationale": "演示阶段的更新不应占用核心交付位",
+  "trigger_observation": "连续三轮核心交付里都有 DEMONSTRATED 阶段的产品更新",
+  "evidence_refs": [
+    "runs/2026-10-18/run-r2/run-manifest.json"
+  ],
+  "changes": [
+    {
+      "pointer": "/monitor_rules/maturity_states",
+      "before": [
+        "ANNOUNCED"
+      ],
+      "after": [
+        "ANNOUNCED",
+        "DEMONSTRATED"
+      ]
+    }
+  ],
+  "expected_effect": "核心通道只保留已有可用证据的内容",
+  "side_effects": [
+    "可能压掉确实重要的早期更新"
+  ],
+  "review_condition": "14 天后检查核心通道是否长期为空",
+  "rollback_condition": "核心通道连续 5 轮无交付",
+  "created_at": "2026-10-18T04:00:00+08:00",
+  "contract_version": "1.0"
+}

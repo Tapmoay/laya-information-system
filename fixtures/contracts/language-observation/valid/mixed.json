@@ -1,0 +1,8 @@
+{
+  "candidate_id": "cand-0001",
+  "tag": "MIXED",
+  "method": "CONTENT_HEURISTIC",
+  "confidence": 0.5,
+  "alternatives": [],
+  "contract_version": "1.0"
+}

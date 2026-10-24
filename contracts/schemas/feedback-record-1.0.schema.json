@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/feedback-record/1.0",
+  "title": "FeedbackRecord",
+  "description": "一条反馈。用户明示、可观察行为、Agent 推断三者结构上互斥，不能混写（policy §7.3、v0.3 §8.7）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "feedback_id",
+    "candidate_id",
+    "kind",
+    "source",
+    "captured_at",
+    "user_stated",
+    "observed_action",
+    "agent_inference",
+    "contract_version"
+  ],
+  "properties": {
+    "feedback_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "delivery_id": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kind": {
+      "enum": [
+        "USER_STATED",
+        "OBSERVED_ACTION",
+        "AGENT_INFERRED"
+      ]
+    },
+    "source": {
+      "enum": [
+        "USER_MESSAGE",
+        "UI_ACTION",
+        "SYSTEM_LOG",
+        "AGENT"
+      ]
+    },
+    "captured_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "user_stated": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "statement"
+          ],
+          "properties": {
+            "statement": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "sentiment": {
+              "enum": [
+                "LIKE",
+                "LIKE_FEATURE",
+                "MIXED",
+                "NOT_INTERESTED_NOW",
+                "UNCERTAIN",
+                "MORE_LIKE_THIS",
+                "EXPLORE_DIFFERENT"
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observed_action": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action"
+          ],
+          "properties": {
+            "action": {
+              "enum": [
+                "OPENED",
+                "DISMISSED",
+                "SAVED",
+                "SKIPPED",
+                "READ_TIME"
+              ]
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "description": "行为不是收益：这里只能记录发生了什么，不能推断学到了什么。"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "agent_inference": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inference",
+            "confidence"
+          ],
+          "properties": {
+            "inference": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 1000
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "USER_STATED"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "user_stated"
+        ],
+        "properties": {
+          "user_stated": {
+            "type": "object"
+          },
+          "observed_action": {
+            "type": "null"
+          },
+          "agent_inference": {
+            "type": "null"
+          },
+          "source": {
+            "const": "USER_MESSAGE"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "OBSERVED_ACTION"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "observed_action"
+        ],
+        "properties": {
+          "observed_action": {
+            "type": "object"
+          },
+          "user_stated": {
+            "type": "null"
+          },
+          "agent_inference": {
+            "type": "null"
+          },
+          "source": {
+            "enum": [
+              "UI_ACTION",
+              "SYSTEM_LOG"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "AGENT_INFERRED"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "agent_inference"
+        ],
+        "properties": {
+          "agent_inference": {
+            "type": "object"
+          },
+          "user_stated": {
+            "type": "null"
+          },
+          "observed_action": {
+            "type": "null"
+          },
+          "source": {
+            "const": "AGENT"
+          }
+        }
+      }
+    }
+  ]
+}

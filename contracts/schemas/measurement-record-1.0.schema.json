@@ -1,0 +1,403 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/measurement-record/1.0",
+  "title": "MeasurementRecord",
+  "description": "某项测量。只描述在证据允许范围内的属性，不表达\"应该推荐什么\"（v0.3 §8.4）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "measurement_id",
+    "candidate_id",
+    "capability_id",
+    "measurement_type",
+    "state",
+    "language_context",
+    "method",
+    "measured_at",
+    "contract_version",
+    "trace_ref"
+  ],
+  "properties": {
+    "measurement_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "capability_id": {
+      "type": "string",
+      "pattern": "^CAP-MEA-[0-9]{2}$",
+      "description": "产生该测量的能力。不得是 SELECTION 阶段的能力。"
+    },
+    "measurement_type": {
+      "enum": [
+        "RELEVANCE",
+        "GROWTH_VALUE",
+        "RECENCY",
+        "DECISION_IMPACT",
+        "MATURITY",
+        "CLAIM_EVIDENCE",
+        "EXPLORATION_VALUE",
+        "IMPORTANCE",
+        "SOURCE_CREDIBILITY"
+      ]
+    },
+    "value": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "label_set"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]{0,40}$"
+            },
+            "label_set": {
+              "type": "string",
+              "pattern": "^[A-Z_]+/[0-9]+\\.[0-9]+$"
+            },
+            "score": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "probabilities": {
+              "oneOf": [
+                {
+                  "$ref": "https://laya.local/contracts/common/1.0#/$defs/probability_map"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "状态为 OK 时必须有值；非 OK 时必须为 null。标签是否合法由 contracts/label-sets.yaml 校验。"
+    },
+    "state": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/state"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true,
+      "description": "与结论冲突的证据。允许存在，但必须可见。"
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 300
+      }
+    },
+    "language_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_language",
+        "judgment_language",
+        "input_representation"
+      ],
+      "properties": {
+        "source_language": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+        },
+        "judgment_language": {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+        },
+        "input_representation": {
+          "enum": [
+            "ORIGINAL_SOURCE_TEXT",
+            "TRANSLATION",
+            "EXCERPT",
+            "STRUCTURED_FIELDS"
+          ]
+        },
+        "translation_ref": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "判断语言与输入表示必须分别记录：翻译后判断与原文判断是两条不同的验证路径。"
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "MODEL",
+            "RULE",
+            "CODE"
+          ]
+        },
+        "model_profile_id": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model_revision": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adapter_version": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calibration_profile_id": {
+          "oneOf": [
+            {
+              "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "模型实现必须可追溯到不可变 revision；用 latest/main 这类浮动引用视为无效。"
+    },
+    "measured_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "contract_version": {
+      "const": "1.1"
+    },
+    "trace_ref": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "value",
+          "evidence_refs"
+        ],
+        "properties": {
+          "value": {
+            "type": "object"
+          },
+          "evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "status": {
+                "not": {
+                  "const": "OK"
+                }
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "properties": {
+              "kind": {
+                "const": "MODEL"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "properties": {
+          "method": {
+            "required": [
+              "model_profile_id",
+              "model_revision",
+              "adapter_version"
+            ],
+            "properties": {
+              "model_profile_id": {
+                "type": "string"
+              },
+              "model_revision": {
+                "type": "string"
+              },
+              "adapter_version": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "value": {
+            "type": "object",
+            "properties": {
+              "probabilities": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            },
+            "required": [
+              "probabilities"
+            ]
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "then": {
+        "properties": {
+          "method": {
+            "required": [
+              "calibration_profile_id"
+            ],
+            "properties": {
+              "calibration_profile_id": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language_context": {
+            "properties": {
+              "input_representation": {
+                "const": "TRANSLATION"
+              }
+            },
+            "required": [
+              "input_representation"
+            ]
+          }
+        },
+        "required": [
+          "language_context"
+        ]
+      },
+      "then": {
+        "properties": {
+          "language_context": {
+            "required": [
+              "translation_ref"
+            ],
+            "properties": {
+              "translation_ref": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

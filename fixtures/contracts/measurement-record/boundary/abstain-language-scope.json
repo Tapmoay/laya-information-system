@@ -1,0 +1,35 @@
+{
+  "measurement_id": "meas-2026-10-18-0004",
+  "candidate_id": "cand-2026-10-18-0001",
+  "capability_id": "CAP-MEA-02",
+  "measurement_type": "RELEVANCE",
+  "value": null,
+  "state": {
+    "status": "ABSTAIN",
+    "reason_code": "OUT_OF_VALIDATED_LANGUAGE_SCOPE",
+    "detail_ref": "store/raw/cand-0004.txt"
+  },
+  "evidence_refs": [
+    "store/raw/cand-0001.txt#L1-L40"
+  ],
+  "contradictions": [],
+  "uncertainties": [
+    "标题提到 180/231，但未核对该分数是否来自同一数据集"
+  ],
+  "language_context": {
+    "source_language": "tr",
+    "judgment_language": "en",
+    "input_representation": "ORIGINAL_SOURCE_TEXT",
+    "translation_ref": null
+  },
+  "method": {
+    "kind": "MODEL",
+    "model_profile_id": "MODEL-PROFILE-STRANDS-2B-A",
+    "model_revision": "a1b2c3d4e5f6",
+    "adapter_version": "0.1.0",
+    "calibration_profile_id": null
+  },
+  "measured_at": "2026-10-18T00:20:00+08:00",
+  "contract_version": "1.1",
+  "trace_ref": "trace/2026-10-18/run-0001/invoke-7"
+}

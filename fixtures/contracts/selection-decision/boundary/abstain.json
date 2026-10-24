@@ -1,0 +1,53 @@
+{
+  "selection_id": "sel-2026-10-18-0002",
+  "candidate_id": "cand-2026-10-18-0001",
+  "decided_at": "2026-10-18T02:40:00+08:00",
+  "eligibility": {
+    "decision": "ABSTAIN"
+  },
+  "priority_components": [
+    {
+      "name": "TASK",
+      "value": 0.8,
+      "source_measurement_refs": [
+        "meas-2026-10-18-0001"
+      ]
+    },
+    {
+      "name": "CAPABILITY",
+      "value": 0.6,
+      "source_measurement_refs": [
+        "meas-2026-10-18-0003"
+      ]
+    },
+    {
+      "name": "EXPLORATION",
+      "value": null,
+      "source_measurement_refs": [
+        "meas-2026-10-18-0004"
+      ]
+    }
+  ],
+  "portfolio": {
+    "channel": "NONE",
+    "role": "NONE"
+  },
+  "decision": "ABSTAIN",
+  "reasons": [
+    {
+      "code": "EVIDENCE_INSUFFICIENT",
+      "detail_ref": null
+    }
+  ],
+  "constraint_checks": [
+    {
+      "constraint_id": "CORE_CAPACITY",
+      "limit": 5,
+      "actual": 1,
+      "passed": true
+    }
+  ],
+  "policy_version": "v0.3",
+  "selector_version": "0.1.0",
+  "contract_version": "1.0"
+}

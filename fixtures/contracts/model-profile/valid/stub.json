@@ -1,0 +1,28 @@
+{
+  "model_profile_id": "MODEL-PROFILE-STUB-AGENT",
+  "display_name": "测试桩：Agent/模型关键词",
+  "implementation_kind": "STUB",
+  "provider_or_runtime": "stub",
+  "upstream_model_id": "stub/keyword-agent",
+  "revision": "stub-v1",
+  "license": "N/A（本仓库测试桩，不含任何权重）",
+  "adapter_version": "0.1.0",
+  "capabilities": [
+    "CAP-MEA-02"
+  ],
+  "declared_languages": [],
+  "validated_languages": [],
+  "context_limit_tokens": 4096,
+  "resource_profile": {
+    "vram_peak_mb": null,
+    "ram_peak_mb": null,
+    "cold_start_seconds": null,
+    "per_item_seconds": null
+  },
+  "eval_report_id": null,
+  "calibration_profile_id": null,
+  "status": "CANDIDATE",
+  "activated_at": null,
+  "retired_at": null,
+  "rollback_to": null
+}

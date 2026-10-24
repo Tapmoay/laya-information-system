@@ -1,0 +1,126 @@
+registry_version: "1.0.0"
+updated_at: "2026-10-18"
+note: >-
+  真实模型必须先固定 revision、记录许可与权重来源、在目标机器上实测显存与耗时，
+  并拿到评测报告后才允许把 status 写成 ACTIVE；未验证实现的调用一律要求显式放行。
+
+profiles:
+  - model_profile_id: MODEL-PROFILE-STUB-AGENT
+    display_name: "测试桩：Agent/模型关键词"
+    implementation_kind: STUB
+    provider_or_runtime: stub
+    upstream_model_id: stub/keyword-agent
+    revision: "stub-v1"
+    license: "N/A（本仓库测试桩，不含任何权重）"
+    adapter_version: "0.1.0"
+    capabilities: [CAP-MEA-02]
+    declared_languages: []
+    validated_languages: []
+    context_limit_tokens: 4096
+    resource_profile:
+      vram_peak_mb: null
+      ram_peak_mb: null
+      cold_start_seconds: null
+      per_item_seconds: null
+    eval_report_id: null
+    calibration_profile_id: null
+    status: CANDIDATE
+    activated_at: null
+    retired_at: null
+    rollback_to: null
+
+  - model_profile_id: MODEL-PROFILE-QWEN25-15B
+    display_name: "Qwen2.5-1.5B-Instruct（本机 CUDA，个人非商用）"
+    implementation_kind: REAL
+    provider_or_runtime: "transformers 本地权重（safetensors）"
+    upstream_model_id: Qwen/Qwen2.5-1.5B-Instruct
+    revision: "dd924a11b4c220f3"
+    license: "Apache-2.0"
+    adapter_version: "1.0.0"
+    capabilities: [CAP-MEA-02, CAP-MEA-03, CAP-MEA-05, CAP-MEA-08, CAP-MEA-10]
+    declared_languages: [en, zh-Hans]
+    validated_languages: []
+    context_limit_tokens: 32768
+    resource_profile:
+      vram_peak_mb: 3300
+      ram_peak_mb: null
+      cold_start_seconds: 8.0
+      per_item_seconds: 0.15
+    eval_report_id: "relevance-v2-heldout-MODEL-PROFILE-QWEN25-15B"
+    calibration_profile_id: null
+    status: CANDIDATE
+    activated_at: null
+    retired_at: null
+    rollback_to: null
+
+  - model_profile_id: MODEL-PROFILE-STRANDS-DECIDER-2B
+    display_name: "Strands Decider 2B（typed decision：choice/score/noul，输出概率；每日 13 问的测量模型）"
+    implementation_kind: REAL
+    provider_or_runtime: "strands_decider（Base Qwen3.5-2B-Base + LoRA + pointer head）"
+    upstream_model_id: StrandsAgents/strands-decider-2B-qwen3.5-v1-2610
+    revision: "829f2f0443b18ad5"
+    license: "Apache-2.0"
+    adapter_version: "1.0.0"
+    capabilities: [CAP-MEA-02]
+    declared_languages: [zh-Hans, en]
+    validated_languages: [zh-Hans]
+    context_limit_tokens: 4096
+    resource_profile:
+      vram_peak_mb: null
+      ram_peak_mb: null
+      cold_start_seconds: 30.0
+      per_item_seconds: 0.6
+    eval_report_id: "relevance-v2-heldout-MODEL-PROFILE-STRANDS-DECIDER-2B-20261018T064556Z"
+    calibration_profile_id: null
+    status: ACTIVE
+    activated_at: "2026-10-22T01:50:00+08:00"
+    retired_at: null
+    rollback_to: null
+
+  - model_profile_id: MODEL-PROFILE-QWEN25-3B
+    display_name: "Qwen2.5-3B-Instruct（已退役：只做过翻译，2026-10-22 翻译改走云端 API，权重已删）"
+    implementation_kind: REAL
+    provider_or_runtime: "transformers 本地权重（safetensors，两分片）；角色：翻译，不承担判断"
+    upstream_model_id: Qwen/Qwen2.5-3B-Instruct
+    revision: "72629def1f9e04ae"
+    license: "Apache-2.0"
+    adapter_version: "1.0.0"
+    capabilities: [CAP-MEA-02, CAP-MEA-03, CAP-MEA-05, CAP-MEA-08, CAP-MEA-10]
+    declared_languages: [en, zh-Hans]
+    validated_languages: [zh-Hans]
+    context_limit_tokens: 32768
+    resource_profile:
+      vram_peak_mb: 5947
+      ram_peak_mb: null
+      cold_start_seconds: 12.4
+      per_item_seconds: 0.334
+    eval_report_id: "relevance-v2-heldout-MODEL-PROFILE-QWEN25-3B-20261018T050229Z"
+    calibration_profile_id: null
+    status: DEPRECATED
+    activated_at: "2026-10-18T13:05:00+08:00"
+    retired_at: "2026-10-22T01:40:00+08:00"
+    rollback_to: null
+
+  - model_profile_id: MODEL-PROFILE-STUB-VISUAL
+    display_name: "测试桩：视觉/叙事关键词"
+    implementation_kind: STUB
+    provider_or_runtime: stub
+    upstream_model_id: stub/keyword-visual
+    revision: "stub-v1"
+    license: "N/A（本仓库测试桩，不含任何权重）"
+    adapter_version: "0.1.0"
+    capabilities: [CAP-MEA-02]
+    declared_languages: []
+    validated_languages: []
+    context_limit_tokens: 4096
+    resource_profile:
+      vram_peak_mb: null
+      ram_peak_mb: null
+      cold_start_seconds: null
+      per_item_seconds: null
+    eval_report_id: null
+    calibration_profile_id: null
+    status: CANDIDATE
+    activated_at: null
+    retired_at: null
+    rollback_to: null

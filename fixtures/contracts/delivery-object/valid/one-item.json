@@ -1,0 +1,31 @@
+{
+  "delivery_id": "del-2026-10-18-01",
+  "built_at": "2026-10-18T02:40:00+08:00",
+  "selection_refs": [
+    "sel-2026-10-18-0001"
+  ],
+  "items": [
+    {
+      "candidate_id": "cand-2026-10-18-0001",
+      "priority_rank": 1,
+      "grouping": "CORE",
+      "source_url": "https://example.org/strands-decider-2b",
+      "original_title": {
+        "text": "Strands Decider 2B: typed decision model",
+        "language": "en"
+      },
+      "rendered_title": "Strands Decider 2B：类型化决策模型",
+      "delivery_language_mode": "ZH_TRANSLATION",
+      "rationale_refs": [
+        "meas-2026-10-18-0001"
+      ],
+      "required_caveats": [
+        "180/231 为项目自报，未独立复现"
+      ],
+      "recommended_action": "STUDY"
+    }
+  ],
+  "delivery_language_mode": "ZH_TRANSLATION",
+  "empty_reason": null,
+  "contract_version": "1.0"
+}

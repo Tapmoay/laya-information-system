@@ -1,0 +1,77 @@
+policy_id: SELECTOR-POLICY
+selector_version: "0.1.0"
+policy_version: "0.1.0"
+status: TRIAL
+basis: "information-policy.md §2（价值标准）、§3.8（容量）、§6（筛选规则）；LaYA-technical-roadmap-v0.3.md §8.5"
+
+# 通道：由相关性标签决定，不按分数分。
+channels:
+  DIRECT: CORE
+  ADJACENT: CORE
+  EXPLORATORY: EXPLORATION
+
+# 每个通道用哪个容量字段（字段来自 PolicyConfig.capacity）
+capacity_fields:
+  CORE: core_items_max
+  EXPLORATION: exploration_items_max
+
+# 测量类型 -> 优先级分量。分量分开存，不合成总分。
+component_sources:
+  TASK: RELEVANCE
+  CAPABILITY: GROWTH_VALUE
+  DECISION: DECISION_IMPACT
+  EXPLORATION: EXPLORATION_VALUE
+
+# 标签 -> 分量值。这是显式规则表，可审查、可 diff；不是模型打分。
+label_values:
+  RELEVANCE:
+    DIRECT: 1.0
+    ADJACENT: 0.7
+    EXPLORATORY: 0.3
+  GROWTH_VALUE:
+    TRANSFERABLE_MECHANISM: 1.0
+    GAP_FILLING: 0.8
+    PRACTICE_OPPORTUNITY: 0.7
+    INCREMENTAL: 0.3
+    NONE: 0.0
+  DECISION_IMPACT:
+    CHANGES_DECISION: 1.0
+    MAY_CHANGE_DECISION: 0.6
+    CONTEXT_ONLY: 0.3
+    NONE: 0.0
+  EXPLORATION_VALUE:
+    HIGH: 1.0
+    MODERATE: 0.6
+    LOW: 0.3
+    NONE: 0.0
+  RECENCY:
+    FRESH: 3
+    RECENT: 2
+    AGING: 1
+    STALE: 0
+
+# 逐项词典序：不是加权求和，任何一个维度的差距都不能被其他维度补偿。
+# 最后以 candidate_id 升序兜底，保证同输入同输出。
+ordering:
+  CORE: [decision, task, capability, recency]
+  EXPLORATION: [exploration, capability, recency]
+
+# 哪些情况只监视、不交付。可配置，改动需记入决策日志。
+monitor_rules:
+  maturity_states: [ANNOUNCED]
+  claim_relations: [CONFLICTING]
+
+# 交付动作映射（v0.3 §6.1）
+action_rules:
+  - when: {decision_impact: CHANGES_DECISION}
+    action: APPLY
+  - when: {claim_evidence: CONFLICTING}
+    action: VERIFY
+  - when: {claim_evidence: INSUFFICIENT_EVIDENCE}
+    action: VERIFY
+  - when: {maturity: [ANNOUNCED, DEMONSTRATED, REPRODUCIBLE, DEPLOYABLE, ESTABLISHED]}
+    action: STUDY
+  - when: {growth_value: [TRANSFERABLE_MECHANISM, PRACTICE_OPPORTUNITY, GAP_FILLING]}
+    action: STUDY
+  - when: {}
+    action: SAVE

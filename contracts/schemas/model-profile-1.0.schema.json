@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/model-profile/1.0",
+  "title": "ModelProfile",
+  "description": "模型注册表条目（v0.3 §5.5）。revision 必须不可变；ACTIVE 必须有评测报告与已验证语言。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_profile_id",
+    "display_name",
+    "implementation_kind",
+    "provider_or_runtime",
+    "upstream_model_id",
+    "revision",
+    "license",
+    "adapter_version",
+    "capabilities",
+    "declared_languages",
+    "validated_languages",
+    "context_limit_tokens",
+    "resource_profile",
+    "eval_report_id",
+    "calibration_profile_id",
+    "status"
+  ],
+  "properties": {
+    "model_profile_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "implementation_kind": {
+      "enum": [
+        "REAL",
+        "STUB"
+      ],
+      "description": "STUB 只能用于测试，不能进入正式运行。"
+    },
+    "provider_or_runtime": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "upstream_model_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^(?!.*(latest|main|master)).+$",
+      "minLength": 4,
+      "maxLength": 120
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "adapter_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^CAP-MEA-[0-9]{2}$"
+      },
+      "uniqueItems": true
+    },
+    "declared_languages": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+      },
+      "uniqueItems": true
+    },
+    "validated_languages": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+      },
+      "uniqueItems": true
+    },
+    "context_limit_tokens": {
+      "type": "integer",
+      "minimum": 128,
+      "maximum": 2000000
+    },
+    "resource_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vram_peak_mb",
+        "ram_peak_mb",
+        "cold_start_seconds",
+        "per_item_seconds"
+      ],
+      "properties": {
+        "vram_peak_mb": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ram_peak_mb": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cold_start_seconds": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "per_item_seconds": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "只接受本机实测值；厂商声明不得写进这里。"
+    },
+    "eval_report_id": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "calibration_profile_id": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "CANDIDATE",
+        "SHADOW",
+        "ACTIVE",
+        "DEPRECATED",
+        "BLOCKED"
+      ]
+    },
+    "activated_at": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retired_at": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rollback_to": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ACTIVE"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "eval_report_id"
+        ],
+        "properties": {
+          "eval_report_id": {
+            "type": "string"
+          },
+          "validated_languages": {
+            "minItems": 1
+          },
+          "implementation_kind": {
+            "const": "REAL"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "dataset_id": "relevance-v2-heldout",
+  "model_profile_id": "MODEL-PROFILE-QWEN25-3B",
+  "model_revision": "72629def1f9e04ae",
+  "adapter_version": "1.0.0",
+  "evaluated_at": "2026-10-18T05:00:45+00:00",
+  "total": 20,
+  "correct": 13,
+  "accuracy": 0.65,
+  "by_language": {
+    "en": {
+      "total": 10,
+      "correct": 5,
+      "accuracy": 0.5
+    },
+    "zh-Hans": {
+      "total": 10,
+      "correct": 8,
+      "accuracy": 0.8
+    }
+  },
+  "confusion": {
+    "DIRECT": {
+      "DIRECT": 2,
+      "ADJACENT": 2
+    },
+    "ADJACENT": {
+      "DIRECT": 2,
+      "ADJACENT": 2
+    },
+    "EXPLORATORY": {
+      "EXPLORATORY": 3,
+      "ADJACENT": 1
+    },
+    "UNRELATED": {
+      "UNRELATED": 4
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "EXPLORATORY": 2,
+      "INSUFFICIENT_EVIDENCE": 2
+    }
+  },
+  "rows": [
+    {
+      "id": "h-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 14.653
+    },
+    {
+      "id": "h-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.283
+    },
+    {
+      "id": "h-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.171
+    },
+    {
+      "id": "h-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.281
+    },
+    {
+      "id": "h-en-05",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.172
+    },
+    {
+      "id": "h-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "DIRECT",
+      "status": "OK",
+      "seconds": 0.171
+    },
+    {
+      "id": "h-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.278
+    },
+    {
+      "id": "h-zh-08",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.288
+    },
+    {
+      "id": "h-en-09",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.276
+    },
+    {
+      "id": "h-en-10",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.283
+    },
+    {
+      "id": "h-zh-11",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.283
+    },
+    {
+      "id": "h-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.278
+    },
+    {
+      "id": "h-en-13",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.21
+    },
+    {
+      "id": "h-en-14",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.209
+    },
+    {
+      "id": "h-zh-15",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.209
+    },
+    {
+      "id": "h-zh-16",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.204
+    },
+    {
+      "id": "h-en-17",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.256
+    },
+    {
+      "id": "h-en-18",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.349
+    },
+    {
+      "id": "h-zh-19",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.335
+    },
+    {
+      "id": "h-zh-20",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.255
+    }
+  ],
+  "strategy": "fewshot"
+}

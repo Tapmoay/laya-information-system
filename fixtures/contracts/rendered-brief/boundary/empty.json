@@ -1,0 +1,12 @@
+{
+  "brief_id": "brief-del-empty",
+  "rendered_at": "2026-10-18T03:00:00+08:00",
+  "delivery_ref": "del-empty",
+  "format": "MARKDOWN",
+  "language_mode": "ZH_TRANSLATION",
+  "title": "个人信息简报 · 2026-10-18",
+  "body_markdown": "# 个人信息简报 · 2026-10-18\n\n> 本轮没有合格候选。\n",
+  "items": [],
+  "warnings": [],
+  "contract_version": "1.0"
+}

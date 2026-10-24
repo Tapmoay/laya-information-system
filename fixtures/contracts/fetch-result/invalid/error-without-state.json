@@ -1,0 +1,19 @@
+{
+  "request_id": "req-fetch-0001",
+  "requested_url": "https://Example.org/a/b/?utm_source=x#top",
+  "final_url": "https://example.org/a/b",
+  "outcome": "ERROR",
+  "status_code": 200,
+  "fetched_at": "2026-10-18T03:40:00+08:00",
+  "body_ref": "store/raw/fetch-0001.html",
+  "text": "Strands Decider 2B is a typed decision model that returns a label instead of generating text.",
+  "title": "Strands Decider 2B: typed decision model",
+  "excerpt": "A small model that answers choice questions.",
+  "published_at_raw": "2026-10-17T12:00:00Z",
+  "declared_language": "en",
+  "canonical_link": null,
+  "author_name": null,
+  "site_name": "example.org",
+  "error": null,
+  "contract_version": "1.0"
+}

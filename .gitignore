@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+# 模型权重不进仓库；registry 与 evals 保留
+models/_tf5/
+models/_wheels/
+models/Qwen*/
+models/strands-decider*/
+models/paraphrase-*/
+models/runtime.yaml
+model-cache/
+runs/
+!runs/.gitkeep
+dist/
+scratch/
+store/*.jsonl
+store/*.json
+.env
+*.log
+config/user.yaml
+config/USER.md

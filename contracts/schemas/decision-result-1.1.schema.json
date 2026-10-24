@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/decision-result/1.1",
+  "title": "DecisionResult",
+  "description": "适配器返回的稳定结果。只描述测量，不描述推荐（v0.3 §5.4）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "capability_id",
+    "status",
+    "label",
+    "probabilities",
+    "evidence_refs",
+    "model_profile_id",
+    "model_revision",
+    "adapter_version",
+    "judgment_language",
+    "input_representation",
+    "translation_ref",
+    "inference_metadata_ref",
+    "reason_code",
+    "contract_version"
+  ],
+  "properties": {
+    "request_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "capability_id": {
+      "type": "string",
+      "pattern": "^CAP-MEA-[0-9]{2}$"
+    },
+    "status": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/status"
+    },
+    "label": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "probabilities": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/probability_map"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "abstention": {
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "model_profile_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "model_revision": {
+      "type": "string",
+      "pattern": "^(?!.*(latest|main|master)).+$",
+      "minLength": 4,
+      "maxLength": 120
+    },
+    "adapter_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "calibration_profile_id": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "judgment_language": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+    },
+    "input_representation": {
+      "enum": [
+        "ORIGINAL_SOURCE_TEXT",
+        "TRANSLATION",
+        "EXCERPT",
+        "STRUCTURED_FIELDS"
+      ]
+    },
+    "translation_ref": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inference_metadata_ref": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+    },
+    "reason_code": {
+      "oneOf": [
+        {
+          "$ref": "https://laya.local/contracts/common/1.0#/$defs/reason_code"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "1.1"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "OK"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "reason_code": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ABSTAIN",
+              "ERROR",
+              "UNKNOWN",
+              "PARTIAL",
+              "INVALID"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "reason_code"
+        ],
+        "properties": {
+          "label": {
+            "type": "null"
+          },
+          "reason_code": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "input_representation": {
+            "const": "TRANSLATION"
+          }
+        },
+        "required": [
+          "input_representation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "translation_ref": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

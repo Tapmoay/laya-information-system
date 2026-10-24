@@ -1,0 +1,16 @@
+{
+  "outcome_id": "out-2026-10-18-0001",
+  "candidate_id": "cand-m1-0001",
+  "feedback_refs": [
+    "fb-2026-10-18-0001"
+  ],
+  "actual_use": null,
+  "observed_outcome": {
+    "status": "OBSERVED",
+    "statement": "看起来学会了",
+    "evidence_refs": []
+  },
+  "benefit_judgement": "SUPPORTED",
+  "recorded_at": "2026-10-18T04:00:00+08:00",
+  "contract_version": "1.0"
+}

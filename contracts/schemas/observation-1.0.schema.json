@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/observation/1.0",
+  "title": "Observation",
+  "description": "从多轮运行与反馈中检测到的重复模式。只描述观察，不建议改法（CAP-FBK-04 的输出）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "summary",
+    "severity",
+    "evidence_refs",
+    "window",
+    "contract_version"
+  ],
+  "properties": {
+    "code": {
+      "enum": [
+        "SOURCE_UNSTABLE",
+        "EMPTY_DELIVERY_STREAK",
+        "FEEDBACK_GAP",
+        "MONITOR_HEAVY",
+        "ADAPTER_DEGRADED"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 500
+    },
+    "severity": {
+      "enum": [
+        "INFO",
+        "WARN"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "window": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  }
+}

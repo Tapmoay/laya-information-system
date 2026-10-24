@@ -1,0 +1,130 @@
+{
+  "dataset_id": "relevance-v2-heldout",
+  "label_set": "RELEVANCE/1.0",
+  "capability_id": "CAP-MEA-02",
+  "created_at": "2026-10-18",
+  "note": "留出集：在提示词调整之后才写，未用于调参。用于检查是否过拟合 relevance-v1。",
+  "demand_context": "当前目标：构建一个个人信息决策系统，关注 AI 技术变化（智能体、小模型、评测、工具链）与视觉/叙事设计。",
+  "items": [
+    {
+      "id": "h-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "text": "An engineer documents how they enforce JSON Schema contracts between pipeline stages and what they do when validation fails."
+    },
+    {
+      "id": "h-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "text": "A post explains checkpointing and idempotent push in batch jobs, with failure scenarios and recovery steps."
+    },
+    {
+      "id": "h-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "text": "某团队公开了信息筛选系统的对象契约与校验器实现，附带失败样例。"
+    },
+    {
+      "id": "h-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "text": "一篇工程总结讲如何用文件锁和状态机保证批处理任务不重复执行。"
+    },
+    {
+      "id": "h-en-05",
+      "language": "en",
+      "expected": "ADJACENT",
+      "text": "A tutorial compares prompt chaining frameworks and reports token costs for each."
+    },
+    {
+      "id": "h-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "text": "A blog explains how to fine-tune a small model on classification data and what overfitting looks like."
+    },
+    {
+      "id": "h-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "text": "一篇文章讨论向量数据库选型，比较了几种索引结构的召回率。"
+    },
+    {
+      "id": "h-zh-08",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "text": "某产品发布了新的推理 API 定价，按 token 计费。"
+    },
+    {
+      "id": "h-en-09",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "text": "A long essay on how museum curators sequence rooms to control pacing and attention."
+    },
+    {
+      "id": "h-en-10",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "text": "A film editor explains how cutting rhythm shapes tension in documentary scenes."
+    },
+    {
+      "id": "h-zh-11",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "text": "一篇关于日本庭园中留白与视线引导的长文。"
+    },
+    {
+      "id": "h-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "text": "某作曲家谈极简主义音乐中的重复与变化。"
+    },
+    {
+      "id": "h-en-13",
+      "language": "en",
+      "expected": "UNRELATED",
+      "text": "A hotel reviews its breakfast buffet and room service menu with photos."
+    },
+    {
+      "id": "h-en-14",
+      "language": "en",
+      "expected": "UNRELATED",
+      "text": "A news brief announces a city bus route change effective next month."
+    },
+    {
+      "id": "h-zh-15",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "text": "某电商平台发布双十一优惠清单，列出折扣商品。"
+    },
+    {
+      "id": "h-zh-16",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "text": "一篇影评讨论某部商业片的票房与演员阵容。"
+    },
+    {
+      "id": "h-en-17",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "More details soon."
+    },
+    {
+      "id": "h-en-18",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "See the linked document for the full announcement."
+    },
+    {
+      "id": "h-zh-19",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "稍后公布。"
+    },
+    {
+      "id": "h-zh-20",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "text": "以上。"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "run_id": "run-2026-10-18-0001",
+  "trigger": "MANUAL",
+  "planned_at": null,
+  "started_at": "2026-10-18T02:30:00+08:00",
+  "finished_at": "2026-10-18T02:45:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "policy_version": "v0.3",
+  "contract_versions": {
+    "CANDIDATE-RECORD": "1.0",
+    "MEASUREMENT-RECORD": "1.0"
+  },
+  "model_revisions": [],
+  "stages": [
+    {
+      "stage": "PRECHECK",
+      "status": "OK"
+    },
+    {
+      "stage": "SELECTION",
+      "status": "FAILED",
+      "error_ref": "runs/2026-10-18/errors/sel.json"
+    },
+    {
+      "stage": "DELIVERY_BUILD",
+      "status": "OK"
+    },
+    {
+      "stage": "PUSH",
+      "status": "SKIPPED"
+    },
+    {
+      "stage": "PERSIST_RUN_REPORT",
+      "status": "OK"
+    },
+    {
+      "stage": "RELEASE_RESOURCES",
+      "status": "OK"
+    }
+  ],
+  "run_status": "FAILED",
+  "delivery_status": "SKIPPED",
+  "counts": {
+    "candidates": 3,
+    "measurements": 6,
+    "selected": 1,
+    "delivered": 0
+  },
+  "artifacts": [
+    "runs/2026-10-18/run-2026-10-18-0001/manifest.json"
+  ],
+  "contract_version": "1.0"
+}

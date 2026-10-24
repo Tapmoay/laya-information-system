@@ -1,0 +1,10 @@
+# 调度配置示例。默认关闭：只有手动跑通多轮之后才允许打开。
+# timezone 必须显式写；calendar_rule 是标准 5 段 cron（分 时 日 月 周）。
+schedule:
+  enabled: false
+  timezone: "Asia/Shanghai"
+  calendar_rule: "0 9 * * *"
+  misfire_grace_seconds: 3600
+  misfire_policy: RUN_ONCE
+  max_concurrent_runs: 1
+  manual_trigger_enabled: true

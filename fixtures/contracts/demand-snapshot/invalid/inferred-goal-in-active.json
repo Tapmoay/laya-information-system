@@ -1,0 +1,63 @@
+{
+  "demand_snapshot_id": "demand-2026-10-18-01",
+  "created_at": "2026-10-18T02:40:00+08:00",
+  "policy_bundle_ref": "bundle-2026-10-18-01",
+  "active_goals": [
+    {
+      "goal_id": "goal-ai-agent",
+      "statement": "示例主方向、系统构建、系统工程",
+      "state": "CANDIDATE_INFERRED",
+      "source_ref": "information-policy.md#1.1"
+    },
+    {
+      "goal_id": "goal-visual-narrative",
+      "statement": "示例第二方向、氛围营造与创作表达",
+      "state": "ACTIVE_EXPLICIT",
+      "source_ref": "information-policy.md#1.1"
+    }
+  ],
+  "inferred_goals": [
+    {
+      "goal_id": "goal-inferred-reverse",
+      "statement": "近期多次阅读逆向工程材料，可能在扩展安全方向",
+      "state": "CANDIDATE_INFERRED",
+      "evidence_refs": [
+        "runs/2026-10-10/report.md"
+      ]
+    }
+  ],
+  "active_tasks": [
+    {
+      "task_id": "task-laya-build",
+      "statement": "按 v0.3 构建个人信息决策系统",
+      "status": "ACTIVE",
+      "source_ref": "LaYA-technical-roadmap-v0.3.md#10"
+    }
+  ],
+  "capability_gaps": [
+    {
+      "gap_id": "gap-eval-set",
+      "statement": "缺少跨语言评测集与校准数据",
+      "priority": "HIGH",
+      "addresses_goal_ref": "goal-ai-agent"
+    }
+  ],
+  "constraints": {
+    "daily_information_budget_minutes": 480,
+    "energy_state": "NORMAL"
+  },
+  "exploration_intent": {
+    "enabled": true,
+    "max_items": 2
+  },
+  "assumptions": [
+    "本地 GPU 约 8GB，模型选择受显存约束"
+  ],
+  "unknowns": [
+    "是否存在旧仓库需要继承契约"
+  ],
+  "state": {
+    "status": "OK"
+  },
+  "contract_version": "1.0"
+}

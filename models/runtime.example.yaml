@@ -1,0 +1,8 @@
+# 本机运行时映射：把模型档案 ID 指到本地权重。
+# 复制为 models/runtime.yaml 后按需修改（该文件不入库，因路径与机器绑定）。
+# 2026-10-22：翻译改走云端（ADR-0031），Qwen2.5-3B 已退役，不再需要本地映射。
+profiles:
+  MODEL-PROFILE-QWEN25-15B:
+    model_path: "models/Qwen2.5-1.5B-Instruct"
+    device: "cuda"
+    dtype: "bfloat16"

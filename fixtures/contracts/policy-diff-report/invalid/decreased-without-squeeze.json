@@ -1,0 +1,29 @@
+{
+  "report_id": "diff-2026-10-18-01",
+  "proposal_ref": "prop-2026-10-18-01",
+  "evaluated_at": "2026-10-18T04:00:00+08:00",
+  "baseline_policy_version": "0.1.0",
+  "candidate_policy_version": "0.1.1",
+  "affected_candidates": [
+    {
+      "candidate_id": "cand-m1-0001",
+      "before": "DELIVER",
+      "after": "MONITOR"
+    }
+  ],
+  "channel_deltas": [
+    {
+      "channel": "CORE",
+      "before": 2,
+      "after": 1
+    },
+    {
+      "channel": "EXPLORATION",
+      "before": 1,
+      "after": 1
+    }
+  ],
+  "improvements": [],
+  "squeezes": [],
+  "contract_version": "1.0"
+}

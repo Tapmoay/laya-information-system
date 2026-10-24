@@ -1,0 +1,1290 @@
+registry_version: "1.0.0"
+contract_schema: contracts/capability-contract.schema.json
+updated_at: "2026-10-18"
+authority: "LaYA-technical-roadmap-v0.3.md §3–§5、§8、§9；information-policy.md v0.3 §0.1、§3、§9"
+
+stages:
+  - id: POLICY
+    business_loop: false
+    description: "读取政策与目标文档、计算版本哈希、编译机器可读参数。非业务阶段，不产出候选或推荐。"
+  - id: DEMAND
+    business_loop: true
+    description: "把政策与目标编译成本轮需求快照与监测范围。"
+  - id: INFORMATION
+    business_loop: true
+    description: "按检索计划抓取、规范化、去重、识别语言，生成可追溯的衍生文本。"
+  - id: MEASUREMENT
+    business_loop: true
+    description: "在证据允许范围内测量候选属性。测量不等于决策。"
+  - id: SELECTION
+    business_loop: true
+    description: "确定性准入、组合、容量与弃权。冻结约束 RULE_ENGINE_NO_MODEL。"
+  - id: DELIVERY
+    business_loop: true
+    description: "装配结构化交付对象、渲染并推送。呈现层不得新增事实或改动选择。"
+  - id: RUNTIME
+    business_loop: false
+    description: "单轮运行管理：锁、状态机、检查点、运行清单与资源释放。非业务阶段。"
+  - id: FEEDBACK
+    business_loop: true
+    description: "记录用户明示、可观测行为与 Agent 推断，三者分开存储。"
+  - id: POLICY_UPDATE
+    business_loop: true
+    description: "离线评估规则变更，经人工闸门激活或回滚。"
+
+invariants:
+  - id: INV-01
+    rule: "capability_id 全局唯一，格式为 CAP-<阶段码>-NN。"
+    enforced_by: schema+validator
+    rationale: "能力是审计与追溯的稳定引用单元，ID 冲突会让追溯失效。"
+  - id: INV-02
+    rule: "stage=SELECTION 的能力只能由 RULE_SET 或 DETERMINISTIC_CODE 拥有，且 model_required 必须为 false。"
+    enforced_by: schema+validator
+    rationale: "落实冻结约束 RULE_ENGINE_NO_MODEL：选择阶段不得调用模型。"
+  - id: INV-03
+    rule: "model_required=true 的能力，owner_type 必须是 MODEL_ADAPTER、HYBRID 或 AI_AGENT。"
+    enforced_by: validator
+    rationale: "避免确定性规则能力伪装成模型能力，也避免模型能力伪装成代码。"
+  - id: INV-04
+    rule: "owner_type=MODEL_ADAPTER 的能力，model_required 必须为 true。"
+    enforced_by: validator
+    rationale: "适配器能力的存在理由就是调用模型，否则应降级为代码能力。"
+  - id: INV-05
+    rule: "depends_on 引用的能力必须存在，不得自引用，依赖图必须无环。"
+    enforced_by: validator
+    rationale: "依赖图必须可拓扑排序，否则阶段编排顺序不可验证。"
+  - id: INV-06
+    rule: "stages 中声明的每个阶段至少有一个能力。"
+    enforced_by: validator
+    rationale: "避免某个环节只有文字描述、没有可验收契约。"
+  - id: INV-07
+    rule: "每个能力至少声明一个 trace_field，且同一能力内不得重复。"
+    enforced_by: validator
+    rationale: "没有追溯字段的能力无法在 RunManifest 中复核。"
+  - id: INV-08
+    rule: "capability_id 与 name 中不得出现具体模型或厂商名称。"
+    enforced_by: validator
+    rationale: "模型必须可替换；能力标识一旦绑定厂商就无法安全换模型。"
+  - id: INV-09
+    rule: "external_effects=true 的能力必须声明 authorization_basis。"
+    enforced_by: schema+validator
+    rationale: "外部高影响动作必须有明确授权依据，不得默认执行。"
+  - id: INV-10
+    rule: "external_effects=true 只允许出现在 DELIVERY 或 POLICY_UPDATE 阶段。"
+    enforced_by: validator
+    rationale: "政策读取、检索、测量与选择阶段不得产生外部副作用。"
+  - id: INV-11
+    rule: "业务阶段依赖必须单向：能力不得依赖业务循环中更靠后的阶段（RUNTIME 横切，不参与）。"
+    enforced_by: validator
+    rationale: "阶段顺序被倒置会让编排出现循环等待，且说明职责边界已经混乱。"
+
+capabilities:
+  # ---------- POLICY ----------
+  - capability_id: CAP-POL-01
+    name: policy-bundle-load
+    purpose: "读取当前有效的政策、目标文档与版本元数据，产出带哈希的政策包；版本不一致时阻止本轮继续。"
+    stage: POLICY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：policy/loader.py（读真实政策文件、抽顶部与 §10 自述版本、检出 C-01 冲突并给出三态）"
+    inputs:
+      - name: policy_doc_path
+        schema_ref: POLICY-DOC/1.0
+        required: true
+        source_capability: null
+      - name: goal_doc_paths
+        schema_ref: GOAL-DOC-SET/1.0
+        required: true
+        source_capability: null
+    outputs:
+      - name: policy_bundle
+        schema_ref: POLICY-BUNDLE/1.0
+        guarantees: ["记录每个输入文件的内容哈希", "记录文档自述版本，但不把它当作已核实版本"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "在检测不到有效政策版本时使用内置默认值继续运行"
+      - "把文档自述版本直接当作本轮实际版本"
+    external_effects: false
+    model_required: false
+    trace_fields: [policy_version, policy_hash, goal_doc_versions]
+    test_strategy:
+      - "缺失政策文件必须返回 ERROR，而不是空政策包"
+      - "同一文件重复读取的哈希必须稳定"
+    depends_on: []
+
+  - capability_id: CAP-POL-02
+    name: machine-config-compile
+    purpose: "把政策中的通道、容量上限与语言默认值编译为机器可读配置，并校验配置与政策版本一致。"
+    stage: POLICY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：policy/compiler.py（容量从 §3.8 原文抽取，抽不到就报错，不给默认值）"
+    inputs:
+      - name: policy_bundle
+        schema_ref: POLICY-BUNDLE/1.0
+        required: true
+        source_capability: CAP-POL-01
+    outputs:
+      - name: machine_policy_config
+        schema_ref: POLICY-CONFIG/1.0
+        guarantees: ["容量上限带来源条款引用", "缺少关键上限时编译失败"]
+    unknown_behavior: INVALID
+    forbidden:
+      - "在代码中另存一份会与政策文件漂移的容量上限副本"
+      - "把上限解释为必须填满的配额"
+    external_effects: false
+    model_required: false
+    trace_fields: [policy_version, config_hash, capacity_limits]
+    test_strategy:
+      - "缺少关键上限时配置编译必须失败"
+      - "上限字段不得被改写为配额下限"
+    depends_on: [CAP-POL-01]
+
+  # ---------- DEMAND ----------
+  - capability_id: CAP-DEM-01
+    name: demand-snapshot-build
+    purpose: "依据政策包、目标文档与近期任务生成本轮需求快照，并把推断目标明确标注为候选。"
+    stage: DEMAND
+    owner_type: HYBRID
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: policy_bundle
+        schema_ref: POLICY-BUNDLE/1.0
+        required: true
+        source_capability: CAP-POL-01
+      - name: goal_docs
+        schema_ref: GOAL-DOC-SET/1.0
+        required: true
+        source_capability: CAP-POL-01
+    outputs:
+      - name: demand_snapshot
+        schema_ref: DEMAND-SNAPSHOT/1.0
+        guarantees: ["推断项带 CANDIDATE_INFERRED 状态", "不修改用户已确认的长期目标"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "把 CANDIDATE_INFERRED 目标写成 ACTIVE_EXPLICIT"
+      - "在没有用户明示时改写长期目标"
+    external_effects: false
+    model_required: true
+    trace_fields: [demand_snapshot_id, goal_state_counts, assumption_refs]
+    test_strategy:
+      - "目标文档缺失时产出带 unknowns 的快照并标 PARTIAL"
+      - "推断目标不得出现在 active_goals 中"
+    depends_on: [CAP-POL-01, CAP-POL-02]
+
+  - capability_id: CAP-DEM-02
+    name: monitoring-profile-derive
+    purpose: "从需求快照推导本轮监测问题、主题、邻接领域与排除项，并记录推导依据。"
+    stage: DEMAND
+    owner_type: HYBRID
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: demand_snapshot
+        schema_ref: DEMAND-SNAPSHOT/1.0
+        required: true
+        source_capability: CAP-DEM-01
+    outputs:
+      - name: monitoring_profile
+        schema_ref: MONITORING-PROFILE/1.0
+        guarantees: ["每个主题可追溯到具体监测问题", "排除项带理由"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "用固定技术白名单替代从目标推导"
+      - "为每个新术语建立重复监测项"
+    external_effects: false
+    model_required: true
+    trace_fields: [monitoring_profile_id, derived_from_demand, rationale_refs]
+    test_strategy:
+      - "监测主题必须能追溯到需求条目"
+      - "同一需求重复推导不得无限扩张主题数量"
+    depends_on: [CAP-DEM-01]
+
+  # ---------- INFORMATION ----------
+  - capability_id: CAP-INF-01
+    name: query-plan-generate
+    purpose: "为每个监测问题生成多语言检索计划，记录每条查询的语言、变体与生成依据。"
+    stage: INFORMATION
+    owner_type: HYBRID
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: monitoring_profile
+        schema_ref: MONITORING-PROFILE/1.0
+        required: true
+        source_capability: CAP-DEM-02
+    outputs:
+      - name: query_plan
+        schema_ref: QUERY-PLAN/1.0
+        guarantees: ["每条查询挂到具体监测问题", "记录使用的语言集合"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "只生成单一语言查询而不记录理由"
+      - "把检索语言隐式固定为某一种"
+    external_effects: false
+    model_required: true
+    trace_fields: [query_plan_id, languages_used, query_to_question_map]
+    test_strategy:
+      - "每条查询必须能映射回监测问题"
+      - "语言集合必须与推导依据或配置一致"
+    depends_on: [CAP-DEM-02]
+
+  - capability_id: CAP-INF-02
+    name: source-fetch
+    purpose: "执行检索计划中的抓取与请求，记录来源地址、时间、超时、重试与最终状态。"
+    stage: INFORMATION
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：ingest/fetch.py（白名单默认拒绝 + robots + 有限重试 + 字节上限 + 字符集嗅探）；链接发现见 ingest/discover.py，端到端抓取见 tools/crawl.py。单元测试跑在本机 HTTP 服务器上；tools/crawl.py 会访问登记表里的公网来源，取证链见 docs/22-crawl-provenance.md"
+    inputs:
+      - name: query_plan
+        schema_ref: QUERY-PLAN/1.0
+        required: true
+        source_capability: CAP-INF-01
+    outputs:
+      - name: fetch_results
+        schema_ref: FETCH-RESULT/1.0
+        guarantees: ["失败带 HTTP 状态或异常类型", "重试次数有上限"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "把抓取失败记录为没有相关内容"
+      - "在返回内容为空时推断来源已删除"
+    external_effects: false
+    model_required: false
+    trace_fields: [request_id, url, http_status, attempt, elapsed_ms]
+    test_strategy:
+      - "超时必须记为 ERROR 并进入有限重试"
+      - "重试次数达到上限后停止"
+    depends_on: [CAP-INF-01]
+
+  - capability_id: CAP-INF-03
+    name: candidate-normalize
+    purpose: "对抓取结果做 URL 规范化、时间解析、内容哈希与字段校验，产出候选记录。"
+    stage: INFORMATION
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：ingest/{urls,normalize,dedupe}.py；测试：tests/test_ingest.py"
+    inputs:
+      - name: fetch_results
+        schema_ref: FETCH-RESULT/1.0
+        required: true
+        source_capability: CAP-INF-02
+    outputs:
+      - name: candidate_records
+        schema_ref: CANDIDATE-RECORD/1.0
+        guarantees: ["规范化结果在同一版本下可重复", "无法解析的时间标 UNKNOWN"]
+    unknown_behavior: INVALID
+    forbidden:
+      - "对无法解析的发布时间填默认值"
+      - "用未规范化的 URL 作为去重键"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, canonical_url, content_digest, normalize_version]
+    test_strategy:
+      - "同一 URL 的不同写法必须归一到同一键"
+      - "缺失发布时间标 UNKNOWN，而不是当天"
+    depends_on: [CAP-INF-02]
+
+  - capability_id: CAP-INF-04
+    name: source-identity-resolve
+    purpose: "区分发布者与实际上游来源，用确定性证据规则建立来源身份链；证据不足保留 UNKNOWN。"
+    stage: INFORMATION
+    owner_type: RULE_SET
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：ingest/identity.py（canonical link / upstream hint / 无信号→UNKNOWN）；independence_count 保证多转载只算一个证据"
+    inputs:
+      - name: candidate_records
+        schema_ref: CANDIDATE-RECORD/1.0
+        required: true
+        source_capability: CAP-INF-03
+    outputs:
+      - name: identity_evidence
+        schema_ref: SOURCE-IDENTITY/1.0
+        guarantees: ["publisher 与 upstream_source 分别表达", "证据不足时状态为 UNKNOWN"]
+    unknown_behavior: UNKNOWN
+    forbidden:
+      - "仅凭语气或排版把转载判为原始来源"
+      - "在证据不足时把 publisher 标为已确认"
+    external_effects: false
+    model_required: false
+    trace_fields: [source_identity_status, publisher, upstream_source, evidence_refs]
+    test_strategy:
+      - "多条转载指向同一上游时只计一个独立证据"
+      - "身份无法证明时保持 UNKNOWN"
+    depends_on: [CAP-INF-03]
+
+  - capability_id: CAP-INF-05
+    name: language-identify
+    purpose: "识别候选的来源语言与识别方法，混合语种或低置信时标记 MIXED 或 UNKNOWN。"
+    stage: INFORMATION
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：ingest/language.py（汉字数 vs 英文词数启发式，说不清就 UNKNOWN）；若将来引入模型检测需改回 HYBRID 并升契约"
+    inputs:
+      - name: candidate_records
+        schema_ref: CANDIDATE-RECORD/1.0
+        required: true
+        source_capability: CAP-INF-03
+    outputs:
+      - name: language_observation
+        schema_ref: LANGUAGE-OBSERVATION/1.0
+        guarantees: ["记录识别方法与置信度", "不确定时不输出单一语种"]
+    unknown_behavior: UNKNOWN
+    forbidden:
+      - "把识别不确定的语种记为已确认"
+      - "根据域名国别推断内容语言"
+    external_effects: false
+    model_required: false
+    # 当前是脚本启发式；模型路径未启用
+    trace_fields: [source_language, language_method, language_confidence]
+    test_strategy:
+      - "混合语种样本必须标记 MIXED"
+      - "低置信结果不得直接写 zh-Hans 或 en"
+    depends_on: [CAP-INF-03]
+
+  - capability_id: CAP-INF-06
+    name: text-representation-build
+    purpose: "生成可追溯的翻译或摘要文本对象，保留原文引用、方法与语义风险标记。"
+    stage: INFORMATION
+    owner_type: HYBRID
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_records
+        schema_ref: CANDIDATE-RECORD/1.0
+        required: true
+        source_capability: CAP-INF-03
+      - name: language_observation
+        schema_ref: LANGUAGE-OBSERVATION/1.0
+        required: false
+        source_capability: CAP-INF-05
+    outputs:
+      - name: text_representations
+        schema_ref: TEXT-REPRESENTATION/1.0
+        guarantees: ["每个衍生对象带 derived_from_refs", "不覆盖原文"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "用译文覆盖原文"
+      - "把译文当作独立证据来源"
+    external_effects: false
+    model_required: true
+    trace_fields: [text_representation_id, representation_type, method_profile_id]
+    test_strategy:
+      - "译文必须能定位回原文来源"
+      - "含否定、数字或条件改写的译文必须带语义风险标记"
+    depends_on: [CAP-INF-03, CAP-INF-05]
+
+  # ---------- MEASUREMENT ----------
+  - capability_id: CAP-MEA-01
+    name: decision-invoke
+    purpose: "以统一契约调用测量适配器，把模型或规则返回映射为带状态的测量结果；不解释内容。"
+    stage: MEASUREMENT
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：capabilities/adapters/models/{invoke,measurement,registry}.py；只有测试桩，无真实模型"
+    inputs:
+      - name: decision_request
+        schema_ref: DECISION-REQUEST/1.1
+        required: true
+        source_capability: CAP-INF-03
+    outputs:
+      - name: decision_result
+        schema_ref: DECISION-RESULT/1.1
+        guarantees: ["适配器异常映射为 ERROR", "probabilities 可缺省且原因可追溯"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "让适配器的私有输出字段泄漏到业务层"
+      - "把未校准分数伪装成概率"
+    external_effects: false
+    model_required: false
+    trace_fields: [request_id, adapter_version, model_profile_id, model_revision]
+    test_strategy:
+      - "适配器抛异常时映射为 ERROR，而不是 UNKNOWN"
+      - "probabilities 缺省时仍能安全进入测量记录"
+    depends_on: [CAP-INF-03]
+
+  - capability_id: CAP-MEA-02
+    name: relevance-measure
+    purpose: "判断候选与本轮需求的关系类别（直接、邻接、探索、无关、证据不足），并给出证据引用。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：capabilities/adapters/models/qwen_local.py + MODEL-PROFILE-QWEN25-3B（仅 zh-Hans 经评测验证；英文路径返回 OUT_OF_VALIDATED_LANGUAGE_SCOPE）"
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+      - name: demand_snapshot
+        schema_ref: DEMAND-SNAPSHOT/1.0
+        required: true
+        source_capability: CAP-DEM-01
+    outputs:
+      - name: relevance_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["标签来自固定选项集", "记录判断语言与输入表示"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "输出最终推荐决定"
+      - "在缺少候选正文时仅凭标题强判"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, capability_id, label, judgment_language, input_representation]
+    test_strategy:
+      - "证据不足样本应倾向 ABSTAIN"
+      - "选项顺序变化不得导致无理翻转"
+    depends_on: [CAP-MEA-01]
+
+  - capability_id: CAP-MEA-03
+    name: growth-value-measure
+    purpose: "评估候选是否提供可迁移机制、可验证实践或当前能力缺口所需的知识。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+      - name: demand_snapshot
+        schema_ref: DEMAND-SNAPSHOT/1.0
+        required: true
+        source_capability: CAP-DEM-01
+    outputs:
+      - name: growth_value_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["结论限定在能力价值范围内"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把热度或讨论量当作能力价值"
+      - "在没有机制描述时给出高确定性结论"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, capability_id, label, evidence_refs]
+    test_strategy:
+      - "只有标题的样本不得给出高确定性等级"
+      - "同一输入重复调用不得出现标签抖动"
+    depends_on: [CAP-MEA-01]
+
+  - capability_id: CAP-MEA-04
+    name: recency-compute
+    purpose: "用确定性代码计算发布时间、观测时间与新鲜度；不做语义判断。"
+    stage: MEASUREMENT
+    owner_type: DETERMINISTIC_CODE
+    status: CONTRACTED
+    milestone: M1
+    inputs:
+      - name: candidate_records
+        schema_ref: CANDIDATE-RECORD/1.0
+        required: true
+        source_capability: CAP-INF-03
+    outputs:
+      - name: recency_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["时间计算可复算", "缺失时间返回 NOT_APPLICABLE"]
+    unknown_behavior: NOT_APPLICABLE
+    forbidden:
+      - "把无法解析的发布时间当作最新"
+      - "用抓取时间替代发布时间"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, published_at, observed_at, age_hours]
+    test_strategy:
+      - "缺失发布时间返回 NOT_APPLICABLE，而不是 0 天"
+      - "跨时区时间在不同机器上必须算出相同结果"
+    depends_on: [CAP-INF-03]
+
+  - capability_id: CAP-MEA-05
+    name: decision-impact-measure
+    purpose: "判断该更新是否可能改变当前决策或路线；具体版本与日期由代码核验。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+      - name: recency_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        required: false
+        source_capability: CAP-MEA-04
+    outputs:
+      - name: impact_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["不输出对未来的确定性预测"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "仅因版本号更大就判定影响决策"
+      - "替代确定性代码执行版本比较"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, capability_id, label, affected_decision_refs]
+    test_strategy:
+      - "版本号比较必须由代码复现，模型结论只作参考"
+      - "证据不足时返回 ABSTAIN"
+    depends_on: [CAP-MEA-01, CAP-MEA-04]
+
+  - capability_id: CAP-MEA-06
+    name: maturity-classify
+    purpose: "按证据把技术主张归入公告、演示、可复现、可部署、已确立等成熟度状态。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+      - name: evidence_refs
+        schema_ref: EVIDENCE-REF/1.0
+        required: false
+        source_capability: CAP-INF-04
+    outputs:
+      - name: maturity_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["无证据时不得判为可复现或已确立"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把演示效果当作稳定生产能力"
+      - "在没有代码或复现材料时判为可复现"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, capability_id, maturity_state, evidence_refs]
+    test_strategy:
+      - "只有宣传页的样本不得高于 ANNOUNCED"
+      - "缺少证据时返回 ABSTAIN"
+    depends_on: [CAP-MEA-01]
+
+  - capability_id: CAP-MEA-07
+    name: claim-evidence-assess
+    purpose: "判断主张与证据的关系：有支持、部分支持、冲突、证据不足。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+      - name: evidence_refs
+        schema_ref: EVIDENCE-REF/1.0
+        required: true
+        source_capability: CAP-INF-04
+    outputs:
+      - name: claim_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["每条结论挂到具体主张与证据引用"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把模型输出当作事实成立的证明"
+      - "在没有证据引用时输出已支持"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, claim_ref, evidence_refs, relation]
+    test_strategy:
+      - "证据为空时只能返回证据不足"
+      - "证据冲突样本不得输出已支持"
+    depends_on: [CAP-MEA-01]
+
+  - capability_id: CAP-MEA-08
+    name: exploration-value-measure
+    purpose: "评估候选是否提供值得跨领域检验的新视角，且不把探索价值伪装成主线收益。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: candidate_text
+        schema_ref: TEXT-REPRESENTATION/1.0
+        required: true
+        source_capability: CAP-INF-06
+    outputs:
+      - name: exploration_measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["探索价值与任务价值分开记录"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把陌生领域一律标为高探索价值"
+      - "用探索价值掩盖任务无关"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, capability_id, label, rationale_refs]
+    test_strategy:
+      - "与当前领域完全无关的样本不得自动获得高探索价值"
+      - "证据不足时返回 ABSTAIN"
+    depends_on: [CAP-MEA-01]
+
+  - capability_id: CAP-MEA-09
+    name: source-credibility-evidence
+    purpose: "用确定性证据规则汇总来源可信度材料（一手性、独立性、可核验性），不判断真伪。"
+    stage: MEASUREMENT
+    owner_type: RULE_SET
+    status: CONTRACTED
+    milestone: M2
+    inputs:
+      - name: identity_evidence
+        schema_ref: SOURCE-IDENTITY/1.0
+        required: true
+        source_capability: CAP-INF-04
+    outputs:
+      - name: credibility_evidence
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["多个转载只计一个独立来源", "身份未知时保持 UNKNOWN"]
+    unknown_behavior: UNKNOWN
+    forbidden:
+      - "用模型语气或写作质量判断来源可信"
+      - "把多个转载算作独立证据"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, source_identity_status, independence_count]
+    test_strategy:
+      - "同一上游的三条转载独立来源计数必须为 1"
+      - "身份未知时不得给出可信度等级"
+    depends_on: [CAP-INF-04]
+
+  - capability_id: CAP-MEA-10
+    name: importance-assess
+    purpose: "判断一项变化属于 S/A/B 哪一级；S 级是唯一允许打破普通容量限制的等级。"
+    stage: MEASUREMENT
+    owner_type: MODEL_ADAPTER
+    status: CONTRACTED
+    milestone: M2
+    notes: "选择器已实现 S 级破格（selection/engine.py），缺的是产出 IMPORTANCE 测量的判断能力"
+    inputs:
+      - name: candidate
+        schema_ref: CANDIDATE-RECORD/1.0
+        required: true
+        source_capability: CAP-INF-03
+      - name: demand
+        schema_ref: DEMAND-SNAPSHOT/1.0
+        required: true
+        source_capability: CAP-DEM-02
+    outputs:
+      - name: measurement
+        schema_ref: MEASUREMENT-RECORD/1.0
+        guarantees: ["标签取自 IMPORTANCE/1.0", "证据不足时 ABSTAIN 而不是猜成 B"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把普通更新提级为 S 以制造重大新闻"
+      - "为凑满容量而降低等级"
+    external_effects: false
+    model_required: true
+    trace_fields: [candidate_id, label_set, model_revision]
+    test_strategy:
+      - "S 级必须能说明打破容量的理由"
+      - "无法判断时 ABSTAIN，不得默认 B"
+    depends_on: [CAP-DEM-02]
+
+  # ---------- SELECTION ----------
+  - capability_id: CAP-SEL-01
+    name: eligibility-screen
+    purpose: "按政策准入条件筛出可进入交付的候选，并把缺失测量当作弃权而不是无关。"
+    stage: SELECTION
+    owner_type: RULE_SET
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：selection/engine.py:evaluate_candidate；测试：tests/test_selection.py"
+    inputs:
+      - name: measurements
+        schema_ref: MEASUREMENT-RECORD/1.0
+        required: true
+        source_capability: CAP-MEA-02
+      - name: machine_policy_config
+        schema_ref: POLICY-CONFIG/1.0
+        required: true
+        source_capability: CAP-POL-02
+    outputs:
+      - name: eligibility_results
+        schema_ref: SELECTION-DECISION/1.0
+        guarantees: ["每条准入结论带策略版本", "缺失测量不被当作负面证据"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把 UNKNOWN 或 ABSTAIN 测量直接当作无关"
+      - "调用模型或 Agent 做准入判断"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, eligibility, policy_version, selector_version]
+    test_strategy:
+      - "缺失测量时输出 ABSTAIN，而不是 UNRELATED"
+      - "同一输入与策略版本重复运行结果一致"
+    depends_on: [CAP-MEA-02, CAP-MEA-03, CAP-MEA-04, CAP-MEA-05, CAP-MEA-06, CAP-MEA-07, CAP-MEA-08, CAP-MEA-09, CAP-POL-02]
+
+  - capability_id: CAP-SEL-02
+    name: priority-components
+    purpose: "分别计算任务、能力、决策、探索与环境价值分量及质量特征，不合成不可解释的单一总分。"
+    stage: SELECTION
+    owner_type: RULE_SET
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：selection/engine.py:_build_components 与 policy.yaml:label_values；测试：tests/test_selection.py"
+    inputs:
+      - name: eligibility_results
+        schema_ref: SELECTION-DECISION/1.0
+        required: true
+        source_capability: CAP-SEL-01
+    outputs:
+      - name: priority_components
+        schema_ref: SELECTION-DECISION/1.0
+        guarantees: ["每个分量带来源测量引用", "不输出隐藏权重的总分"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "把各分量加权成一个无法解释的单一分数"
+      - "让模型输出未经策略授权直接决定排序"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, component_values, policy_version]
+    test_strategy:
+      - "每个分量必须能追溯到具体测量记录"
+      - "策略未授权时不得用模型分值参与排序"
+    depends_on: [CAP-SEL-01]
+
+  - capability_id: CAP-SEL-03
+    name: portfolio-construct
+    purpose: "在通道、多样性与探索约束下构造交付组合，允许结果少于上限。"
+    stage: SELECTION
+    owner_type: RULE_SET
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：selection/engine.py:select（按通道取前 N，词典序）；测试：tests/test_selection.py"
+    inputs:
+      - name: priority_components
+        schema_ref: SELECTION-DECISION/1.0
+        required: true
+        source_capability: CAP-SEL-02
+    outputs:
+      - name: portfolio
+        schema_ref: SELECTION-DECISION/1.0
+        guarantees: ["组合角色逐条记录", "允许空结果"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "把各通道上限机械相加后一次性推送"
+      - "为凑满数量引入低价值条目"
+    external_effects: false
+    model_required: false
+    trace_fields: [portfolio_id, portfolio_roles, channel_allocation]
+    test_strategy:
+      - "无合格候选时输出空组合而不是占位条目"
+      - "探索额度不得被主线内容吞并"
+    depends_on: [CAP-SEL-02]
+
+  - capability_id: CAP-SEL-04
+    name: capacity-constraint-check
+    purpose: "校验注意力容量、每轮时间预算与类别上限，输出可审计的约束检查结果。"
+    stage: SELECTION
+    owner_type: RULE_SET
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：selection/engine.py:select 的 constraint_checks；容量来自 PolicyConfig，不写死"
+    inputs:
+      - name: portfolio
+        schema_ref: SELECTION-DECISION/1.0
+        required: true
+        source_capability: CAP-SEL-03
+      - name: machine_policy_config
+        schema_ref: POLICY-CONFIG/1.0
+        required: true
+        source_capability: CAP-POL-02
+    outputs:
+      - name: constraint_checks
+        schema_ref: SELECTION-DECISION/1.0
+        guarantees: ["超限时给出具体约束与数值"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "把上限当配额"
+      - "在超限时静默丢弃约束检查记录"
+    external_effects: false
+    model_required: false
+    trace_fields: [constraint_id, limit_value, actual_value, pass_fail]
+    test_strategy:
+      - "超过上限必须失败并给出数值"
+      - "未达上限必须通过而不补足"
+    depends_on: [CAP-SEL-03, CAP-POL-02]
+
+  - capability_id: CAP-SEL-05
+    name: decision-emit
+    purpose: "输出结构化选择决定：准入、分量、组合角色、决定、理由、策略版本与约束检查。"
+    stage: SELECTION
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：selection/engine.py:select；输出由 tools/validate_objects.py 校验"
+    inputs:
+      - name: constraint_checks
+        schema_ref: SELECTION-DECISION/1.0
+        required: true
+        source_capability: CAP-SEL-04
+    outputs:
+      - name: selection_decisions
+        schema_ref: SELECTION-DECISION/1.0
+        guarantees: ["每条决定带理由", "空结果也是合法决定"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "省略决定理由"
+      - "在没有合格候选时编造结果"
+    external_effects: false
+    model_required: false
+    trace_fields: [selection_id, decision, decision_reasons, selector_version]
+    test_strategy:
+      - "同输入同策略版本产生可重复结果"
+      - "无候选时输出空决定且状态明确"
+    depends_on: [CAP-SEL-04]
+
+  # ---------- DELIVERY ----------
+  - capability_id: CAP-DEL-01
+    name: delivery-object-build
+    purpose: "把选择结果装配为结构化交付对象，带优先级、理由引用、必需警示与语言模式。"
+    stage: DELIVERY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：delivery/builder.py；空结果必须带 empty_reason；测试：tests/test_m1_offline.py"
+    inputs:
+      - name: selection_decisions
+        schema_ref: SELECTION-DECISION/1.0
+        required: true
+        source_capability: CAP-SEL-05
+    outputs:
+      - name: delivery_object
+        schema_ref: DELIVERY-OBJECT/1.0
+        guarantees: ["每条内容带来源链接", "语言模式可逐条覆盖"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "在装配阶段重新筛选或调整优先级"
+      - "加入没有来源链接的新事实"
+    external_effects: false
+    model_required: false
+    trace_fields: [delivery_id, selected_candidate_refs, delivery_language_mode]
+    test_strategy:
+      - "交付对象不得改变选择顺序"
+      - "缺少来源链接的条目必须被拒绝"
+    depends_on: [CAP-SEL-05]
+
+  - capability_id: CAP-DEL-02
+    name: presentation-render
+    purpose: "把交付对象渲染为可读简报，区分事实、解释、假设与未知状态。"
+    stage: DELIVERY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：delivery/renderer.py（确定性模板，不调用模型）；接入翻译后再评估是否升级为 HYBRID"
+    inputs:
+      - name: delivery_object
+        schema_ref: DELIVERY-OBJECT/1.0
+        required: true
+        source_capability: CAP-DEL-01
+    outputs:
+      - name: rendered_brief
+        schema_ref: RENDERED-BRIEF/1.0
+        guarantees: ["每条重要主张有来源", "原文标题与译文并列可追溯"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "在渲染阶段补充未核验事实"
+      - "让译文覆盖原文标题"
+    external_effects: false
+    model_required: false
+    trace_fields: [render_id, delivery_language_mode, fact_caveat_refs]
+    test_strategy:
+      - "渲染结果中的事实断言必须能对应交付对象字段"
+      - "未知与弃权状态必须在文本中显式出现"
+    depends_on: [CAP-DEL-01]
+
+  - capability_id: CAP-DEL-03
+    name: push-dispatch
+    purpose: "把已渲染交付发送到用户指定渠道，带幂等键与有限重试。"
+    stage: DELIVERY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：delivery/push.py（FILE 通道 + jsonl 幂等账本）；尚未接入真实消息渠道"
+    inputs:
+      - name: rendered_brief
+        schema_ref: RENDERED-BRIEF/1.0
+        required: true
+        source_capability: CAP-DEL-02
+    outputs:
+      - name: push_status
+        schema_ref: DELIVERY-STATUS/1.0
+        guarantees: ["幂等键可复算", "重试不产生重复推送"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "重试时重复推送同一条交付"
+      - "在未配置渠道时默认发送"
+    external_effects: true
+    authorization_basis: "USER_CONFIGURED：渠道、凭据与频率由用户显式配置"
+    model_required: false
+    trace_fields: [delivery_id, channel, idempotency_key, push_status]
+    test_strategy:
+      - "同一幂等键重试不得产生第二次推送"
+      - "未配置渠道时必须拒绝执行"
+    depends_on: [CAP-DEL-02]
+
+  - capability_id: CAP-DEL-04
+    name: delivery-status-record
+    purpose: "分别记录交付生成状态与推送状态，支持只重试推送而不重跑整轮。"
+    stage: DELIVERY
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：delivery/push.py 产出 DeliveryStatus；runtime/offline_run.py 将 run_status 与 delivery_status 分开写"
+    inputs:
+      - name: push_status
+        schema_ref: DELIVERY-STATUS/1.0
+        required: true
+        source_capability: CAP-DEL-03
+    outputs:
+      - name: delivery_record
+        schema_ref: DELIVERY-STATUS/1.0
+        guarantees: ["run 状态与 push 状态分开存储"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "用 run 成功替代推送成功"
+      - "把推送失败写成部分成功而不留证据"
+    external_effects: false
+    model_required: false
+    trace_fields: [run_id, delivery_status, retry_count]
+    test_strategy:
+      - "推送失败时 run 与 delivery 状态必须不同"
+      - "仅重试推送时不得重新采集"
+    depends_on: [CAP-DEL-03]
+
+  # ---------- RUNTIME ----------
+  - capability_id: CAP-RUN-01
+    name: run-manager
+    purpose: "以单实例锁与状态机驱动一轮运行，阶段失败可定位、可终止、可重试。"
+    stage: RUNTIME
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：runtime/run_manager.py + runtime/lock.py；测试：tests/test_run_manager.py"
+    inputs:
+      - name: policy_bundle
+        schema_ref: POLICY-BUNDLE/1.0
+        required: true
+        source_capability: CAP-POL-01
+    outputs:
+      - name: run_state
+        schema_ref: RUN-STATE/1.0
+        guarantees: ["同一时间只有一个正式 run", "阶段状态与错误可定位"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "并发启动第二个正式 run"
+      - "在某阶段失败后继续推进下游阶段"
+    external_effects: false
+    model_required: false
+    trace_fields: [run_id, trigger, stage, stage_status, started_at]
+    test_strategy:
+      - "并发触发时第二个 run 必须被拒绝"
+      - "阶段失败后下游阶段不得执行"
+    depends_on: [CAP-POL-01]
+
+  - capability_id: CAP-RUN-02
+    name: checkpoint-resume
+    purpose: "按输入与配置哈希保存阶段检查点，只复用版本一致的成功产物。"
+    stage: RUNTIME
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：runtime/checkpoints.py；key = sha256(阶段 + 输入指纹)，测试 test_checkpoint_reuses_only_matching_inputs"
+    inputs:
+      - name: run_state
+        schema_ref: RUN-STATE/1.0
+        required: true
+        source_capability: CAP-RUN-01
+    outputs:
+      - name: checkpoints
+        schema_ref: CHECKPOINT/1.0
+        guarantees: ["检查点带输入与配置哈希", "版本不一致时拒绝复用"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "复用版本不一致的阶段产物"
+      - "因检查点复用导致重复推送"
+    external_effects: false
+    model_required: false
+    trace_fields: [checkpoint_id, input_hash, config_hash, stage]
+    test_strategy:
+      - "输入哈希变化后检查点必须失效"
+      - "复用检查点不得触发第二次推送"
+    depends_on: [CAP-RUN-01]
+
+  - capability_id: CAP-RUN-03
+    name: run-manifest-persist
+    purpose: "持久化本轮运行清单：触发方式、版本、模型 revision、阶段状态、错误与产物引用。"
+    stage: RUNTIME
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M1
+    notes: "实现：runtime/manifest.py + runtime/offline_run.py:on_complete；失败也写清单（errors.json 存正文）"
+    inputs:
+      - name: run_state
+        schema_ref: RUN-STATE/1.0
+        required: true
+        source_capability: CAP-RUN-01
+    outputs:
+      - name: run_manifest
+        schema_ref: RUN-MANIFEST/1.0
+        guarantees: ["失败与弃权与成功同样被记录", "记录模型不可变 revision"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "只保存成功结果不保存失败与弃权"
+      - "把长篇内部推理写入运行清单"
+    external_effects: false
+    model_required: false
+    trace_fields: [run_id, policy_version, model_revisions, stage_statuses]
+    test_strategy:
+      - "中途失败的 run 也必须留下清单"
+      - "清单不得包含凭据或完整敏感正文"
+    depends_on: [CAP-RUN-01]
+
+  - capability_id: CAP-RUN-04
+    name: scheduler-entry
+    purpose: "按显式时区与日历规则触发一次入口程序，并按策略处理错过的计划时刻。"
+    stage: RUNTIME
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M2
+    notes: "实现：runtime/schedule.py + runtime/scheduled_entry.py；OS 级定时器由部署配置负责，程序只做决策与单轮执行"
+    inputs:
+      - name: run_state
+        schema_ref: RUN-STATE/1.0
+        required: true
+        source_capability: CAP-RUN-01
+    outputs:
+      - name: trigger_record
+        schema_ref: TRIGGER-RECORD/1.0
+        guarantees: ["时区显式记录", "misfire 策略可审计"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "依赖主机隐式时区"
+      - "在错过计划时刻后补跑多轮"
+    external_effects: false
+    model_required: false
+    trace_fields: [scheduled_at, actual_start, timezone, misfire_policy]
+    test_strategy:
+      - "时区未显式配置时拒绝启用调度"
+      - "睡眠唤醒后最多补跑一轮"
+    depends_on: [CAP-RUN-01]
+
+  - capability_id: CAP-RUN-05
+    name: resource-release
+    purpose: "释放模型显存、子进程、临时文件与锁，确认进程可以退出。"
+    stage: RUNTIME
+    owner_type: DETERMINISTIC_CODE
+    status: CONTRACTED
+    milestone: M1
+    inputs:
+      - name: run_state
+        schema_ref: RUN-STATE/1.0
+        required: true
+        source_capability: CAP-RUN-01
+    outputs:
+      - name: release_report
+        schema_ref: RESOURCE-RELEASE/1.0
+        guarantees: ["逐项记录释放结果", "失败可见"]
+    unknown_behavior: PARTIAL
+    forbidden:
+      - "在仍有子进程存活时报告已释放"
+      - "把清理失败当作运行成功"
+    external_effects: false
+    model_required: false
+    trace_fields: [vram_released_mb, child_processes, lock_released]
+    test_strategy:
+      - "模型加载后必须观察到显存回落"
+      - "锁未释放时下一次运行必须被拒绝"
+    depends_on: [CAP-RUN-01]
+
+  # ---------- FEEDBACK ----------
+  - capability_id: CAP-FBK-01
+    name: feedback-capture
+    purpose: "记录用户直接反馈、可观测行为与 Agent 推断，三者分开存储。"
+    stage: FEEDBACK
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M3
+    notes: "实现：feedback/capture.py；三类反馈在 schema 层互斥；测试：tests/test_feedback.py"
+    inputs:
+      - name: delivery_record
+        schema_ref: DELIVERY-STATUS/1.0
+        required: true
+        source_capability: CAP-DEL-04
+    outputs:
+      - name: feedback_records
+        schema_ref: FEEDBACK-RECORD/1.0
+        guarantees: ["明示、观察、推断三类字段不混用"]
+    unknown_behavior: MISSING
+    forbidden:
+      - "把点击或停留直接当作用户收益"
+      - "在没有反馈时补造反馈"
+    external_effects: false
+    model_required: false
+    trace_fields: [feedback_id, feedback_type, captured_at, source]
+    test_strategy:
+      - "无反馈时字段为 MISSING 而不是默认值"
+      - "推断字段不得写入用户明示字段"
+    depends_on: [CAP-DEL-04]
+
+  - capability_id: CAP-FBK-02
+    name: outcome-association
+    purpose: "把推荐与后续实际使用、验证结果关联，并标注观察状态。"
+    stage: FEEDBACK
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M3
+    notes: "实现：feedback/outcome.py（只做确定性关联，不做语义推断）；证据缺失时只能 UNKNOWN + NOT_EVALUATED"
+    inputs:
+      - name: feedback_records
+        schema_ref: FEEDBACK-RECORD/1.0
+        required: true
+        source_capability: CAP-FBK-01
+    outputs:
+      - name: outcome_records
+        schema_ref: OUTCOME-RECORD/1.0
+        guarantees: ["区分已观察、部分观察与未观察"]
+    unknown_behavior: UNKNOWN
+    forbidden:
+      - "用主观兴奋感确认收益"
+      - "推断用户未表达的个人情况"
+    external_effects: false
+    model_required: false
+    trace_fields: [candidate_id, outcome_status, evidence_refs]
+    test_strategy:
+      - "没有可观察证据时只能标未观察"
+      - "不得把推荐失败直接归因于用户"
+    depends_on: [CAP-FBK-01]
+
+  - capability_id: CAP-FBK-03
+    name: policy-change-propose
+    purpose: "基于重复观察到的问题提出规则变更提案，默认停在 PROPOSED 或 TRIAL。"
+    stage: FEEDBACK
+    owner_type: AI_AGENT
+    status: PROPOSED
+    milestone: M3
+    notes: "提案构造器已实现（feedback/proposal.py），但'该改什么'的判断仍由 Agent 负责，尚未接入"
+    inputs:
+      - name: outcome_records
+        schema_ref: OUTCOME-RECORD/1.0
+        required: true
+        source_capability: CAP-FBK-02
+    outputs:
+      - name: policy_proposals
+        schema_ref: POLICY-PROPOSAL/1.0
+        guarantees: ["每条提案带触发观察与回滚条件"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "直接激活会改变政策原则的规则"
+      - "为提高推荐量而修改目标"
+    external_effects: false
+    model_required: true
+    trace_fields: [proposal_id, rule_id, status, evidence_refs]
+    test_strategy:
+      - "提案不得直接进入 ACTIVE"
+      - "一次观察到的问题不得自动生成永久规则"
+    depends_on: [CAP-FBK-02]
+
+  - capability_id: CAP-FBK-04
+    name: observation-detect
+    purpose: "从多轮运行清单与反馈里找出反复出现的模式，并附上证据；不建议改法。"
+    stage: FEEDBACK
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M3
+    notes: "实现：feedback/detector.py（窗口内计数，窗口与阈值可配）；只输出观察，提案仍由 FBK-03 负责"
+    inputs:
+      - name: run_manifests
+        schema_ref: RUN-MANIFEST/1.0
+        required: true
+        source_capability: CAP-RUN-03
+      - name: feedback_records
+        schema_ref: FEEDBACK-RECORD/1.0
+        required: false
+        source_capability: CAP-FBK-01
+    outputs:
+      - name: observations
+        schema_ref: OBSERVATION/1.0
+        guarantees: ["每条观察至少带一个运行证据引用", "只描述模式，不给改法"]
+    unknown_behavior: MISSING
+    forbidden:
+      - "在证据不足时报告趋势"
+      - "把一次异常升级为长期结论"
+    external_effects: false
+    model_required: false
+    trace_fields: [code, window, evidence_refs]
+    test_strategy:
+      - "窗口内不足阈值时不产生观察"
+      - "观察必须带可点击的运行清单引用"
+      - "检测器不修改任何策略"
+    depends_on: [CAP-RUN-03, CAP-FBK-01]
+
+  # ---------- POLICY_UPDATE ----------
+  - capability_id: CAP-PUP-01
+    name: policy-diff-evaluate
+    purpose: "在离线历史输入上重跑选择，比较规则变更前后的候选差异与副作用。"
+    stage: POLICY_UPDATE
+    owner_type: DETERMINISTIC_CODE
+    status: IMPLEMENTED
+    milestone: M3
+    notes: "实现：feedback/policy_diff.py；通道变少时 squeezes 为空会被校验器拦下"
+    inputs:
+      - name: policy_proposals
+        schema_ref: POLICY-PROPOSAL/1.0
+        required: true
+        source_capability: CAP-FBK-03
+    outputs:
+      - name: policy_diff_report
+        schema_ref: POLICY-DIFF-REPORT/1.0
+        guarantees: ["报告改善与挤压两类影响"]
+    unknown_behavior: ERROR
+    forbidden:
+      - "用变更后的新规则重新标注历史结果"
+      - "只报告改善不报告挤压"
+    external_effects: false
+    model_required: false
+    trace_fields: [proposal_id, affected_candidates, channel_deltas]
+    test_strategy:
+      - "同一历史输入重复评估结果一致"
+      - "报告必须列出受挤压的通道"
+    depends_on: [CAP-FBK-03]
+
+  - capability_id: CAP-PUP-02
+    name: rule-activation-gate
+    purpose: "由人工确认规则激活、退役或回滚，保留版本与回滚路径。"
+    # 实现：feedback/activation.py + feedback/policy_store.py（人工签名 + 不可变版本 + 回滚）
+    stage: POLICY_UPDATE
+    owner_type: HUMAN_GATE
+    status: IMPLEMENTED
+    milestone: M3
+    notes: "实现：feedback/activation.py（人工签名 + 不可变版本 + 回滚）；界面仍未做，目前由代码调用"
+    inputs:
+      - name: policy_diff_report
+        schema_ref: POLICY-DIFF-REPORT/1.0
+        required: true
+        source_capability: CAP-PUP-01
+    outputs:
+      - name: policy_activation_record
+        schema_ref: POLICY-ACTIVATION/1.0
+        guarantees: ["记录批准人、时间与回滚条件"]
+    unknown_behavior: ABSTAIN
+    forbidden:
+      - "由 Agent 自行激活 L0 或 L1 变更"
+      - "删除旧版本记录"
+    external_effects: true
+    authorization_basis: "HUMAN_GATE：规则激活必须由用户显式确认"
+    model_required: false
+    trace_fields: [rule_id, approved_by, activated_at, rollback_condition]
+    test_strategy:
+      - "未经人工确认的提案不得进入 ACTIVE"
+      - "回滚必须能还原旧版本"
+    depends_on: [CAP-PUP-01]

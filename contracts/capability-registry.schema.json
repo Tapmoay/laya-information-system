@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/capability-registry/1.0.0",
+  "title": "Capability Registry",
+  "description": "能力注册表的机器可读事实源。人类可读索引由 tools/validate_registry.py --index 生成，不得手工维护重复内容。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "contract_schema",
+    "updated_at",
+    "authority",
+    "stages",
+    "invariants",
+    "capabilities"
+  ],
+  "properties": {
+    "registry_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "contract_schema": {
+      "type": "string",
+      "minLength": 5
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "authority": {
+      "type": "string",
+      "minLength": 5
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "business_loop",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "POLICY",
+              "DEMAND",
+              "INFORMATION",
+              "MEASUREMENT",
+              "SELECTION",
+              "DELIVERY",
+              "RUNTIME",
+              "FEEDBACK",
+              "POLICY_UPDATE"
+            ]
+          },
+          "business_loop": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 8
+          }
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rule",
+          "enforced_by",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^INV-[0-9]{2}$"
+          },
+          "rule": {
+            "type": "string",
+            "minLength": 12
+          },
+          "enforced_by": {
+            "enum": [
+              "schema",
+              "validator",
+              "schema+validator"
+            ]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 8
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "description": "每一项由 capability-contract.schema.json 单独校验，以便逐项报错。"
+      }
+    }
+  }
+}

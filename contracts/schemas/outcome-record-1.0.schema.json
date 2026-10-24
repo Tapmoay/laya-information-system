@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/outcome-record/1.0",
+  "title": "OutcomeRecord",
+  "description": "推荐之后实际发生了什么。没有观察就不能下收益结论（policy §7.4、§7.5）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome_id",
+    "candidate_id",
+    "feedback_refs",
+    "actual_use",
+    "observed_outcome",
+    "benefit_judgement",
+    "recorded_at",
+    "contract_version"
+  ],
+  "properties": {
+    "outcome_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "candidate_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "feedback_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "actual_use": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "APPLIED",
+                "STUDIED",
+                "VERIFIED",
+                "SAVED",
+                "NOT_USED"
+              ]
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observed_outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "OBSERVED",
+            "PARTIALLY_OBSERVED",
+            "NOT_OBSERVED",
+            "UNKNOWN"
+          ]
+        },
+        "statement": {
+          "oneOf": [
+            {
+              "type": "string",
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "benefit_judgement": {
+      "enum": [
+        "SUPPORTED",
+        "PARTIALLY_SUPPORTED",
+        "NOT_SUPPORTED",
+        "INDETERMINATE",
+        "NOT_EVALUATED"
+      ]
+    },
+    "recorded_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "observed_outcome": {
+            "properties": {
+              "status": {
+                "const": "OBSERVED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "observed_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "observed_outcome": {
+            "required": [
+              "evidence_refs"
+            ],
+            "properties": {
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "benefit_judgement": {
+            "enum": [
+              "SUPPORTED",
+              "NOT_SUPPORTED"
+            ]
+          }
+        },
+        "required": [
+          "benefit_judgement"
+        ]
+      },
+      "then": {
+        "properties": {
+          "observed_outcome": {
+            "properties": {
+              "status": {
+                "const": "OBSERVED"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "actual_use": {
+            "type": "null"
+          },
+          "observed_outcome": {
+            "properties": {
+              "status": {
+                "const": "UNKNOWN"
+              }
+            }
+          }
+        },
+        "required": [
+          "actual_use",
+          "observed_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "benefit_judgement": {
+            "const": "NOT_EVALUATED"
+          }
+        }
+      }
+    }
+  ]
+}

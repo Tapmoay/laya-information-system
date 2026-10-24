@@ -1,0 +1,699 @@
+# 信息源库 —— 我们会去哪些地方找东西，以及每个源凭什么值得每天抓。
+#
+# v2 相对 v1 加的是分类法。一个源不只回答"这是什么主题"，还要回答：
+#   field   内容讲哪个领域          → 决定它会不会挤占别的领域的名额
+#   kind    内容是怎么产出的        → 决定信息密度与时效（预印本和媒体编译差一个量级）
+#   role    它服务用户的哪个目标    → 决定进核心位、任务位还是探索位
+#   serves  它具体喂哪个目标或任务  → 说不出喂什么，就不该被每天抓
+# 任何一项缺失或不在分类法里，tools/source_index.py --check 会当场报错。
+#
+# 路径正则不是猜的：它等于我们对"这个站点的文章长什么样"的唯一断言。
+# 写错了会当场少抓或抓错，而抓错的内容会以"质量分低"的形式悄悄污染标定数据。
+# 每一条都标注了验证状态：
+#   VERIFIED —— 实测能抓到正文（正文长度、编码、标题都核对过）
+#   UNSTABLE —— 能抓到但列表噪声大（导航链接混进文章链接）
+#   UNVERIFIED —— 登记了但还没实测
+#
+# 注意：select_links 会先去掉路径尾部的斜杠再匹配正则，所以 pattern 里不要写 /$ 。
+schema: 2
+
+defaults:
+  timeout_seconds: 20
+  max_attempts: 2
+  max_bytes: 3000000
+  respect_robots: true
+  user_agent: "LAYA-personal-information/0.1"
+
+taxonomy:
+  field:
+    ai: "AI 模型、智能体、AI 工程与评测"
+    security: "网络安全、逆向工程、漏洞与攻防研究"
+    engineering: "软件工程、系统架构、分布式与运维实践"
+    tooling: "数字工具、效率方法与软硬件使用"
+    design: "视觉设计、平面与交互、广告创意"
+    art: "当代艺术、装置、影像与艺术批评"
+    architecture: "建筑、空间与构成"
+    music: "音乐制作、声音设计与音频设备"
+    culture: "游戏、亚文化与叙事"
+    philosophy: "思想、哲学与伦理"
+    business: "科技商业、产业与资本动向"
+  kind:
+    preprint: "学术预印本：有摘要、有方法、可回溯到 abs 页"
+    aggregator: "人工或 AI 精编的聚合，每条都带一手来源链接"
+    lab_release: "机构一手公告、更新日志、官方技术博客"
+    engineering_blog: "工程团队或从业者的技术长文"
+    media: "行业媒体的报道与编译"
+    critique: "批评、评论与策展，作品与分析并重"
+    community: "社区讨论：从业者的实际抱怨与经验，密度低但环境价值高"
+  role:
+    core: "服务长期主要方向，应该每天都看一眼"
+    task: "服务当前任务；任务换了，它就跟着换"
+    explore: "跨领域或陌生视角，主要喂探索位"
+    control: "同主题低密度对照源，用来暴露「凡是 AI 就收」这类偏差"
+  density:
+    high: "读完能拿到机制、数据或可复现的做法"
+    medium: "有事实和判断，但还需要往一手材料追一层"
+    low: "以消息和观点为主，认知增量有限"
+
+targets:
+  goals:
+    - id: goal-agent-systems
+      tier: T1
+      statement: "主方向：示例领域 A（换成你自己的长期方向）"
+    - id: goal-visual-narrative
+      tier: T2
+      statement: "第二方向：示例领域 B（可留空）"
+    - id: goal-security
+      tier: T3
+      statement: "第三方向：示例领域 C（可留空）"
+  tasks:
+    - id: task-ai-agent
+      tier: T0
+      statement: "当前任务：示例任务（换成你正在推进的事）（2026-10-24 起的当前任务）"
+    - id: task-security-foundation
+      tier: T0
+      statement: "网络安全基础与授权渗透测试入门（可在候选池里切换）"
+    - id: task-system-build
+      tier: T0
+      statement: "系统构建：把要做的东西真的搭起来，而不是只读别人的做法"
+    - id: task-ai-project
+      tier: T0
+      statement: "其他 AI 项目：模型、工具链、评测与自用系统"
+    - id: task-virtual-intelligence
+      tier: T0
+      statement: "虚拟聚生智能：虚拟的 AI 人、AI 伴侣、AI 直播（含二次元虚拟主播）"
+
+sources:
+  # ── 学术预印本：这是"方法论与可复现"最集中的一类来源 ──────────────
+  - id: SRC-ARXIV-CS-AI
+    name: arXiv cs.AI 最新
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-ai-agent]
+    per_source: 6
+    why: "AI 的通用方法层；摘要本身就是一份完整的机制说明，比媒体转述可信得多"
+    indexes:
+      - url: "https://arxiv.org/list/cs.AI/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-CL
+    name: arXiv cs.CL 最新
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-virtual-intelligence, task-ai-agent]
+    per_source: 6
+    why: "语言模型与评测的主战场；新方法与失败案例都先出现在这里。角色扮演、人格一致性、长期对话记忆都在这一类里，也正是虚拟人最先要解决的问题"
+    indexes:
+      - url: "https://arxiv.org/list/cs.CL/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-LG
+    name: arXiv cs.LG 最新
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-agent]
+    per_source: 6
+    why: "训练与推理的底层机制；判断一个模型说法是否站得住，要靠这一层"
+    indexes:
+      - url: "https://arxiv.org/list/cs.LG/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-SE
+    name: arXiv cs.SE 最新
+    field: engineering
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [task-system-build, goal-agent-systems]
+    per_source: 6
+    why: "软件开发本身的研究：契约、测试、代码生成、可维护性；系统构建最缺的就是这类可检验结论"
+    indexes:
+      - url: "https://arxiv.org/list/cs.SE/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-CR
+    name: arXiv cs.CR 最新
+    field: security
+    kind: preprint
+    role: task
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-security, task-security-foundation]
+    per_source: 6
+    why: "安全里少数能把攻击与防御讲到可复现程度的来源；安全媒体大多是二次转述"
+    indexes:
+      - url: "https://arxiv.org/list/cs.CR/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-MA
+    name: arXiv cs.MA 多智能体
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems]
+    per_source: 6
+    why: "多智能体协作与涌现行为。注意它和「虚拟聚生智能」不是一回事——后者是虚拟人/伴侣，不是一个系统里多个智能体协作"
+    indexes:
+      - url: "https://arxiv.org/list/cs.MA/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-RO
+    name: arXiv cs.RO 机器人
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems]
+    per_source: 5
+    why: "具身智能：智能体有了身体之后，哪些结论会变、哪些会失效"
+    indexes:
+      - url: "https://arxiv.org/list/cs.RO/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-ARXIV-CS-HC
+    name: arXiv cs.HC 人机交互
+    field: design
+    kind: preprint
+    role: explore
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-visual-narrative, task-virtual-intelligence]
+    per_source: 5
+    why: "人怎么读、怎么误读界面；示例第二方向要落地，绕不开这一层实证。虚拟主播「像不像人」也归这里"
+    indexes:
+      - url: "https://arxiv.org/list/cs.HC/recent"
+        pattern: '^/abs/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  - id: SRC-HF-PAPERS
+    name: Hugging Face Papers
+    field: ai
+    kind: preprint
+    role: core
+    language: en
+    density: high
+    network: proxy
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-virtual-intelligence, task-ai-agent]
+    per_source: 6
+    why: "带社区讨论的论文榜单：同一篇论文有没有人复现、有没有人骂，比摘要本身更有用。直连被阻断，必须走代理"
+    indexes:
+      - url: "https://huggingface.co/papers"
+        pattern: '^/papers/\d{4}\.\d{4,5}$'
+        min_anchor_chars: 8
+
+  # ── 聚合：一手链接可回溯，适合快速扫一遍发生了什么 ────────────────
+  - id: SRC-AIHOT
+    name: AIHOT AI 日报
+    field: ai
+    kind: aggregator
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-virtual-intelligence, task-ai-agent]
+    per_source: 10
+    why: "每天 08:00 的精编日报，每条都标了原始来源并能跳回原文；适合快速判断「今天有没有值得深挖的东西」，不适合代替一手材料"
+    indexes:
+      - url: "https://aihot.news/all"
+        pattern: '^/items/[a-z0-9]+$'
+        min_anchor_chars: 8
+        limit: 12
+      - url: "https://aihot.news/daily"
+        pattern: '^/items/[a-z0-9]+$'
+        min_anchor_chars: 8
+        limit: 6
+
+  # ── 一手公告与技术博客 ──────────────────────────────────────────
+  - id: SRC-ANTHROPIC
+    name: Anthropic News
+    field: ai
+    kind: lab_release
+    role: core
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-agent]
+    per_source: 5
+    why: "模型能力边界的一手说法；判断二手解读是否夸大，只能回到这里"
+    indexes:
+      - url: "https://www.anthropic.com/news"
+        pattern: '^/news/[a-z0-9-]+$'
+        min_anchor_chars: 8
+
+  - id: SRC-LILIANWENG
+    name: Lil'Log（翁丽莲）
+    field: ai
+    kind: engineering_blog
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-agent]
+    per_source: 5
+    why: "把一个方向的论文串成一条线，正好补上「读单篇论文看不出全局」这个缺口"
+    indexes:
+      - url: "https://lilianweng.github.io/"
+        pattern: '^/posts/\d{4}-\d{2}-\d{2}-[a-z0-9-]+$'
+        min_anchor_chars: 0
+
+  - id: SRC-SIMONW
+    name: Simon Willison's Weblog
+    field: ai
+    kind: engineering_blog
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-ai-agent]
+    per_source: 6
+    why: "动手试出来的结论，常带失败案例与可复现代码；比发布会更接近「这东西实际能干什么」"
+    indexes:
+      - url: "https://simonwillison.net/"
+        pattern: '^/\d{4}/[A-Z][a-z]{2}/\d{1,2}/[a-z0-9-]+$'
+        min_anchor_chars: 8
+        # 他有一类 /sighting-NNNN/ 的观鸟记录，实测正文 589 字、信息密度为零。
+        # 排掉它不是在挑观点，是政策 §2 那条「密度低的一律不要」。
+        exclude: ["/sighting-"]
+
+  - id: SRC-MARTINFOWLER
+    name: martinfowler.com
+    field: engineering
+    kind: engineering_blog
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [task-system-build, goal-agent-systems]
+    per_source: 5
+    why: "系统构建里的取舍怎么写清楚；架构决策的表述方式本身值得学"
+    indexes:
+      - url: "https://martinfowler.com/"
+        pattern: '^/articles/[a-z0-9-]+\.html$'
+        min_anchor_chars: 8
+
+  - id: SRC-CLOUDFLARE
+    name: Cloudflare Blog
+    field: engineering
+    kind: engineering_blog
+    role: core
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [task-system-build, goal-security]
+    per_source: 6
+    why: "真实规模的系统怎么被做出来、怎么被打破；工程与攻防在同一批文章里"
+    indexes:
+      - url: "https://blog.cloudflare.com/"
+        pattern: '^/[a-z][a-z0-9-]{9,}$'
+        min_anchor_chars: 8
+
+  - id: SRC-HF-BLOG
+    name: Hugging Face Blog
+    field: ai
+    kind: engineering_blog
+    role: explore
+    language: en
+    density: medium
+    network: proxy
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-ai-agent]
+    per_source: 5
+    why: "社区作者写的实践长文，密度参差；价值在于「有人真的这么做了一遍」。直连被阻断，必须走代理"
+    indexes:
+      - url: "https://huggingface.co/blog"
+        pattern: '^/blog/[A-Za-z0-9._-]+(/[a-z0-9-]+)?$'
+        min_anchor_chars: 8
+        exclude: ["/blog/community"]
+
+  # ── 安全：一手研究，不是安全新闻 ────────────────────────────────
+  - id: SRC-CHECKPOINT
+    name: Check Point Research
+    field: security
+    kind: lab_release
+    role: task
+    language: en
+    density: high
+    status: UNSTABLE
+    serves: [goal-security, task-security-foundation]
+    per_source: 6
+    why: "漏洞与恶意代码的逆向分析，带具体手法；安全入门最缺的就是这种「看得见的攻击链」。实测会间歇性返回 202 挑战页（锚点 0 个），此时该次抓取记为 INDEX_EMPTY 而不是「今天没更新」"
+    indexes:
+      - url: "https://research.checkpoint.com/"
+        pattern: '^/\d{4}/[a-z0-9-]+$'
+        min_anchor_chars: 8
+        exclude: ["/category/"]
+
+  - id: SRC-PROJECTZERO
+    name: Google Project Zero
+    field: security
+    kind: lab_release
+    role: task
+    language: en
+    density: high
+    network: proxy
+    status: VERIFIED
+    serves: [goal-security, task-security-foundation]
+    per_source: 5
+    why: "漏洞研究里最讲「为什么这条攻击链成立」的地方；0day 到利用的完整推理过程。直连被 TLS 阻断，必须走代理"
+    indexes:
+      - url: "https://projectzero.google/"
+        pattern: '^/\d{4}/\d{2}/[a-z0-9-]+\.html$'
+        min_anchor_chars: 8
+
+  - id: SRC-ZDI
+    name: Zero Day Initiative Blog
+    field: security
+    kind: lab_release
+    role: task
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-security]
+    per_source: 5
+    why: "漏洞披露与利用细节；能看出一个漏洞值多少钱、为什么难利用"
+    indexes:
+      - url: "https://www.zerodayinitiative.com/blog"
+        pattern: '^/blog/\d{4}/\d{1,2}/\d{1,2}/[a-z0-9-]+$'
+        min_anchor_chars: 8
+
+  - id: SRC-SCHNEIER
+    name: Schneier on Security
+    field: security
+    kind: critique
+    role: task
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-security]
+    per_source: 5
+    why: "安全的政治与判断层；技术细节不多，但常指出「这套防护假设本身是错的」"
+    indexes:
+      - url: "https://www.schneier.com/blog/"
+        pattern: '^/blog/archives/\d{4}/\d{2}/[a-z0-9_-]+\.html$'
+        min_anchor_chars: 8
+        exclude: ["/blog/about"]
+
+  - id: SRC-ANQUANKE
+    name: 安全客
+    field: security
+    kind: media
+    role: task
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-security, task-security-foundation]
+    per_source: 6
+    why: "中文安全社区，有翻译也有原创分析；英文读不动的时候这是唯一能持续跟的入口"
+    indexes:
+      - url: "https://www.anquanke.com/"
+        pattern: '^/post/id/\d+$'
+        min_anchor_chars: 8
+
+  # ── 已有来源（保留，按分类法重新归档） ──────────────────────────
+  - id: SRC-QBITAI
+    name: 量子位
+    field: ai
+    kind: media
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project, task-ai-agent]
+    per_source: 10
+    why: "中文 AI 报道里较快、较全的一手编译；用它发现事件，再回到论文或官方博客核实"
+    indexes:
+      - url: "https://www.qbitai.com/"
+        pattern: '^/\d{4}/\d{2}/\d+\.html$'
+        min_anchor_chars: 8
+
+  - id: SRC-INFOQ
+    name: InfoQ 中文
+    field: engineering
+    kind: media
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [task-system-build, goal-agent-systems]
+    per_source: 8
+    why: "工程实践、架构与评测案例；与系统构建直接相关"
+    indexes:
+      - url: "https://www.infoq.cn/"
+        pattern: '^/article/[A-Za-z0-9]+$'
+        min_anchor_chars: 8
+
+  - id: SRC-SSPAI
+    name: 少数派
+    field: tooling
+    kind: media
+    role: explore
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-agent-systems]
+    per_source: 6
+    why: "工具与工作流的实际用法；同一条工具在这里和在发布公告里是两回事"
+    indexes:
+      - url: "https://sspai.com/"
+        pattern: '^/post/\d+$'
+        min_anchor_chars: 8
+
+  - id: SRC-IFANR
+    name: 爱范儿
+    field: tooling
+    kind: media
+    role: control
+    language: zh-Hans
+    density: low
+    status: VERIFIED
+    serves: [goal-agent-systems]
+    per_source: 6
+    why: "消费科技消息面。留在这里是当对照：如果它总能进核心位，说明我们对「新产品」的偏好在压过信息密度"
+    indexes:
+      - url: "https://www.ifanr.com/"
+        pattern: '^/digest/\d+$'
+        min_anchor_chars: 8
+
+  - id: SRC-TMTPOST
+    name: 钛媒体
+    field: business
+    kind: media
+    role: control
+    language: zh-Hans
+    density: low
+    status: VERIFIED
+    serves: [goal-agent-systems]
+    per_source: 8
+    why: "科技商业叙事。同样是对照源：AI 行业的资本与情绪，认知增量通常低于一篇技术分析"
+    indexes:
+      - url: "https://www.tmtpost.com/"
+        pattern: '^/\d+\.html$'
+        min_anchor_chars: 8
+
+  - id: SRC-V2EX
+    name: V2EX
+    field: tooling
+    kind: community
+    role: explore
+    language: zh-Hans
+    density: low
+    status: VERIFIED
+    serves: [goal-agent-systems, task-ai-project]
+    per_source: 6
+    why: "从业者真正在抱怨什么：额度、限流、哪个模型今天变笨了。密度低，但「环境价值」这一项只有这里最早出现；放探索位，不该常进核心位"
+    indexes:
+      - url: "https://www.v2ex.com/"
+        pattern: '^/t/\d+$'
+        min_anchor_chars: 8
+
+  - id: SRC-GCORES
+    name: 机核
+    field: culture
+    kind: media
+    role: explore
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 6
+    why: "游戏、叙事与文化批评；示例第二方向常在这里有比设计媒体更具体的讨论"
+    indexes:
+      - url: "https://www.gcores.com/"
+        pattern: '^/articles/\d+$'
+        min_anchor_chars: 8
+
+  - id: SRC-MIDIFAN
+    name: Midifan 叉烧网
+    field: music
+    kind: media
+    role: explore
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 6
+    why: "声音与节奏是叙事的一部分；音乐制作里的结构与张力可以直接搬进示例第二方向"
+    indexes:
+      - url: "https://www.midifan.com/"
+        pattern: '^/modulearticle-detailview-\d+\.htm$'
+        min_anchor_chars: 8
+
+  - id: SRC-DIGITALING
+    name: 数英 DIGITALING
+    field: design
+    kind: media
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 8
+    why: "设计与营销案例；能看到创意怎么被约束条件逼出来"
+    indexes:
+      - url: "https://www.digitaling.com/"
+        pattern: '^/articles/\d+\.html$'
+        min_anchor_chars: 8
+
+  - id: SRC-ADQUAN
+    name: 广告门
+    field: design
+    kind: media
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 8
+    why: "创意与品牌实务；口号和画面之外还有投放与人群约束"
+    indexes:
+      - url: "https://www.adquan.com/"
+        pattern: '^/article/\d+$'
+        min_anchor_chars: 8
+
+  - id: SRC-GOOOOD
+    name: 谷德设计网
+    field: architecture
+    kind: media
+    role: core
+    language: zh-Hans
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 8
+    why: "建筑的空间与构成；「把一个视角安排在哪里」在建筑里讲得比在设计媒体更清楚"
+    indexes:
+      - url: "https://www.gooood.cn/category/architecture"
+        pattern: '^/[a-z0-9-]+\.htm$'
+        min_anchor_chars: 8
+
+  - id: SRC-ITSNICETHAT
+    name: It's Nice That
+    field: design
+    kind: media
+    role: core
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 6
+    why: "视觉设计、插画与字体；作品本身就是证据，不解释方法也算"
+    indexes:
+      - url: "https://www.itsnicethat.com/"
+        pattern: '^/(articles|features)/[^/]+$'
+        min_anchor_chars: 8
+
+  - id: SRC-EYEONDESIGN
+    name: Eye on Design (AIGA)
+    field: design
+    kind: critique
+    role: core
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 6
+    why: "设计批评与设计史；提供「为什么这样设计是错的」这类纠错视角"
+    indexes:
+      - url: "https://eyeondesign.aiga.org/"
+        pattern: '^/[a-z0-9-]+$'
+        min_anchor_chars: 8
+        exclude: ["/category/", "/city-guides/", "/about", "/contact", "/donate", "/support", "/newsletter", "/search"]
+
+  - id: SRC-COLOSSAL
+    name: Colossal
+    field: art
+    kind: media
+    role: core
+    language: en
+    density: medium
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 6
+    why: "当代视觉艺术；作品即证据"
+    indexes:
+      - url: "https://www.thisiscolossal.com/"
+        pattern: '^/\d{4}/\d{2}/[^/]+$'
+        min_anchor_chars: 8
+
+  - id: SRC-HYPERALLERGIC
+    name: Hyperallergic
+    field: art
+    kind: critique
+    role: core
+    language: en
+    density: medium
+    status: UNSTABLE
+    serves: [goal-visual-narrative]
+    per_source: 5
+    why: "艺术评论；列表里混有导航链接，靠锚文本长度过滤"
+    indexes:
+      - url: "https://hyperallergic.com/"
+        pattern: '^/[a-z0-9-]+$'
+        min_anchor_chars: 8
+        exclude: ["/tag/", "/about", "/contact", "/newsletter", "/shop", "/donate", "/privacy", "/terms"]
+
+  - id: SRC-AEON
+    name: Aeon Essays
+    field: philosophy
+    kind: critique
+    role: explore
+    language: en
+    density: high
+    status: VERIFIED
+    serves: [goal-visual-narrative]
+    per_source: 5
+    why: "思想与哲学长文；探索位需要的是这种东西，不是又一个科技号"
+    indexes:
+      - url: "https://aeon.co/essays"
+        pattern: '^/essays/[a-z0-9-]+$'
+        min_anchor_chars: 8
+        exclude: ["/essays/popular", "/essays/latest", "/essays/collections"]

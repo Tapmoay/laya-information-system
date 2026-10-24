@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/policy-bundle/1.0",
+  "title": "PolicyBundle",
+  "description": "本轮读取到的政策与目标文档包：文件、哈希、自述版本与版本冲突。CAP-POL-01 的输出。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bundle_id",
+    "compiled_at",
+    "files",
+    "policy_version",
+    "version_conflicts",
+    "proceed_allowed",
+    "state",
+    "contract_version"
+  ],
+  "properties": {
+    "bundle_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "compiled_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "path",
+          "sha256",
+          "byte_length"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "POLICY",
+              "GOAL",
+              "TASKS",
+              "CONSTRAINTS",
+              "MACHINE_CONFIG"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          },
+          "sha256": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/digest"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "declared_version": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "declared_version_in_changelog": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "以文件顶部声明为准；§10 的自我声明单独记录在 files[].declared_version_in_changelog。"
+    },
+    "version_conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "kind",
+          "values"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "SELF_DECLARED_MISMATCH",
+              "EXPECTED_VERSION_MISMATCH"
+            ]
+          },
+          "values": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "proceed_allowed": {
+      "type": "boolean",
+      "description": "存在版本冲突时，是否经显式确认后继续本轮。"
+    },
+    "state": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/state"
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "version_conflicts": {
+            "maxItems": 0
+          }
+        },
+        "required": [
+          "version_conflicts"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "version_conflicts": {
+            "minItems": 1
+          },
+          "proceed_allowed": {
+            "const": true
+          }
+        },
+        "required": [
+          "version_conflicts",
+          "proceed_allowed"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "status": {
+                "const": "PARTIAL"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "version_conflicts": {
+            "minItems": 1
+          },
+          "proceed_allowed": {
+            "const": false
+          }
+        },
+        "required": [
+          "version_conflicts",
+          "proceed_allowed"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "status": {
+                "const": "INVALID"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

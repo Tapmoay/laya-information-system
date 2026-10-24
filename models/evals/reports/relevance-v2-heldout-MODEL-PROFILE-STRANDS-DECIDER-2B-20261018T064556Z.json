@@ -1,0 +1,204 @@
+{
+  "dataset_id": "relevance-v2-heldout",
+  "model_profile_id": "MODEL-PROFILE-STRANDS-DECIDER-2B",
+  "model_revision": "829f2f0443b18ad5",
+  "adapter_version": "1.0.0",
+  "evaluated_at": "2026-10-18T06:45:56+00:00",
+  "total": 20,
+  "correct": 12,
+  "accuracy": 0.6,
+  "by_language": {
+    "en": {
+      "total": 10,
+      "correct": 5,
+      "accuracy": 0.5
+    },
+    "zh-Hans": {
+      "total": 10,
+      "correct": 7,
+      "accuracy": 0.7
+    }
+  },
+  "confusion": {
+    "DIRECT": {
+      "ADJACENT": 4
+    },
+    "ADJACENT": {
+      "ADJACENT": 4
+    },
+    "EXPLORATORY": {
+      "EXPLORATORY": 2,
+      "ADJACENT": 2
+    },
+    "UNRELATED": {
+      "ADJACENT": 2,
+      "UNRELATED": 2
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "INSUFFICIENT_EVIDENCE": 4
+    }
+  },
+  "rows": [
+    {
+      "id": "h-en-01",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 24.607
+    },
+    {
+      "id": "h-en-02",
+      "language": "en",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.087
+    },
+    {
+      "id": "h-zh-03",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.101
+    },
+    {
+      "id": "h-zh-04",
+      "language": "zh-Hans",
+      "expected": "DIRECT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.073
+    },
+    {
+      "id": "h-en-05",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.086
+    },
+    {
+      "id": "h-en-06",
+      "language": "en",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.091
+    },
+    {
+      "id": "h-zh-07",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.083
+    },
+    {
+      "id": "h-zh-08",
+      "language": "zh-Hans",
+      "expected": "ADJACENT",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.083
+    },
+    {
+      "id": "h-en-09",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.082
+    },
+    {
+      "id": "h-en-10",
+      "language": "en",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.09
+    },
+    {
+      "id": "h-zh-11",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "EXPLORATORY",
+      "status": "OK",
+      "seconds": 0.074
+    },
+    {
+      "id": "h-zh-12",
+      "language": "zh-Hans",
+      "expected": "EXPLORATORY",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.077
+    },
+    {
+      "id": "h-en-13",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.073
+    },
+    {
+      "id": "h-en-14",
+      "language": "en",
+      "expected": "UNRELATED",
+      "actual": "ADJACENT",
+      "status": "OK",
+      "seconds": 0.083
+    },
+    {
+      "id": "h-zh-15",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.083
+    },
+    {
+      "id": "h-zh-16",
+      "language": "zh-Hans",
+      "expected": "UNRELATED",
+      "actual": "UNRELATED",
+      "status": "OK",
+      "seconds": 0.088
+    },
+    {
+      "id": "h-en-17",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.1
+    },
+    {
+      "id": "h-en-18",
+      "language": "en",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.078
+    },
+    {
+      "id": "h-zh-19",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.096
+    },
+    {
+      "id": "h-zh-20",
+      "language": "zh-Hans",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "status": "OK",
+      "seconds": 0.079
+    }
+  ],
+  "strategy": "default"
+}

@@ -1,0 +1,25 @@
+{
+  "activation_id": "act-2026-10-18-01",
+  "proposal_ref": "prop-2026-10-18-01",
+  "diff_report_ref": "diff-2026-10-18-01",
+  "approved_by": "用户",
+  "approved_at": "2026-10-18T04:40:00+08:00",
+  "activated_at": "2026-10-18T04:40:00+08:00",
+  "from_policy_version": "0.1.0",
+  "to_policy_version": "0.2.0",
+  "changes_applied": [
+    {
+      "pointer": "/monitor_rules/maturity_states",
+      "before": [
+        "ANNOUNCED"
+      ],
+      "after": [
+        "ANNOUNCED",
+        "DEMONSTRATED"
+      ]
+    }
+  ],
+  "rollback_to": "0.1.0",
+  "note": "审查通过",
+  "contract_version": "1.0"
+}

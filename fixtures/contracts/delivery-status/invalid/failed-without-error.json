@@ -1,0 +1,13 @@
+{
+  "delivery_status_id": "dstat-brief-del-run-m1-test",
+  "run_id": "run-m1-test",
+  "delivery_ref": "del-run-m1-test",
+  "channel": "FILE",
+  "idempotency_key": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "status": "FAILED",
+  "attempts": 3,
+  "pushed_at": null,
+  "artifact_ref": null,
+  "error_ref": null,
+  "contract_version": "1.0"
+}

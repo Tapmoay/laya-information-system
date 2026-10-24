@@ -1,0 +1,57 @@
+{
+  "config_id": "cfg-2026-10-18-01",
+  "compiled_at": "2026-10-18T02:50:00+08:00",
+  "policy_version": "v0.3",
+  "policy_bundle_ref": "bundle-2026-10-18-01",
+  "capacity": {
+    "core_items_max": 1,
+    "exploration_items_max": 2,
+    "visual_match_max": 5,
+    "visual_exploration_max": 2,
+    "s_breakout_allowed": true
+  },
+  "capacity_sources": [
+    {
+      "field": "core_items_max",
+      "clause": "information-policy.md §3.8"
+    },
+    {
+      "field": "exploration_items_max",
+      "clause": "information-policy.md §3.8"
+    },
+    {
+      "field": "visual_match_max",
+      "clause": "information-policy.md §3.7"
+    },
+    {
+      "field": "visual_exploration_max",
+      "clause": "information-policy.md §3.7"
+    },
+    {
+      "field": "s_breakout_allowed",
+      "clause": "information-policy.md §3.5"
+    }
+  ],
+  "language": {
+    "retrieval_mode": "DYNAMIC_MULTILINGUAL",
+    "allowed_retrieval_languages": [
+      "en",
+      "zh-Hans"
+    ],
+    "judgment_language_policy": "BEST_VALIDATED_PATH_PER_CAPABILITY",
+    "delivery_language_mode": "ZH_TRANSLATION",
+    "show_original_title": true,
+    "translated_text_is_evidence": false,
+    "verify_critical_claims_against_source": true
+  },
+  "run_limits": {
+    "max_duration_minutes": null,
+    "max_network_retries": 2,
+    "per_source_timeout_seconds": null,
+    "model_timeout_seconds": null,
+    "push_retry_limit": 3,
+    "stop_on_policy_version_mismatch": true
+  },
+  "config_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "contract_version": "1.0"
+}

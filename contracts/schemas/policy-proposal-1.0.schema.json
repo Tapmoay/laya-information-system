@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/policy-proposal/1.0",
+  "title": "PolicyProposal",
+  "description": "规则变更提案。只能停在 PROPOSED / TRIAL；激活必须过人工闸门（v0.3 WP-R9）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_id",
+    "rule_id",
+    "status",
+    "rationale",
+    "trigger_observation",
+    "evidence_refs",
+    "changes",
+    "expected_effect",
+    "side_effects",
+    "review_condition",
+    "rollback_condition",
+    "created_at",
+    "contract_version"
+  ],
+  "properties": {
+    "proposal_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "rule_id": {
+      "type": "string",
+      "pattern": "^RULE-[A-Z0-9-]{2,40}$"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "TRIAL"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 2000
+    },
+    "trigger_observation": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 1000
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://laya.local/contracts/common/1.0#/$defs/evidence_ref"
+      },
+      "uniqueItems": true
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pointer",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "pattern": "^(/[A-Za-z0-9_]+)+$"
+          },
+          "before": {},
+          "after": {}
+        }
+      }
+    },
+    "expected_effect": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 1000
+    },
+    "side_effects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 4,
+        "maxLength": 500
+      }
+    },
+    "review_condition": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 500
+    },
+    "rollback_condition": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 500
+    },
+    "created_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "delivery_id": "del-2026-10-18-01",
+  "built_at": "2026-10-18T02:40:00+08:00",
+  "selection_refs": [],
+  "items": [],
+  "delivery_language_mode": "ZH_TRANSLATION",
+  "empty_reason": {
+    "code": "NO_ELIGIBLE_CANDIDATES",
+    "detail_ref": "runs/2026-10-18/sel.json"
+  },
+  "contract_version": "1.0"
+}

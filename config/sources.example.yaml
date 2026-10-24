@@ -1,0 +1,13 @@
+# 受控来源。白名单为空 = 拒绝一切（默认拒绝，不是默认允许）。
+# 真实使用前必须显式列出允许抓取的主机，并确认目标站点允许抓取。
+sources:
+  allowed_hosts:
+    - "127.0.0.1"
+    - "localhost"
+  timeout_seconds: 10
+  max_attempts: 3
+  max_bytes: 2000000
+  user_agent: "LaYA-personal-information/0.1"
+  respect_robots: true
+  retry_backoff_seconds: 0.05
+  store_dir: "store/raw"

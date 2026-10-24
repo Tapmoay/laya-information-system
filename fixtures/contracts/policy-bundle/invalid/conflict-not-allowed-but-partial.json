@@ -1,0 +1,39 @@
+{
+  "bundle_id": "bundle-2026-10-18-01",
+  "compiled_at": "2026-10-18T02:40:00+08:00",
+  "files": [
+    {
+      "role": "POLICY",
+      "path": "information-policy.md",
+      "sha256": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "byte_length": 40844,
+      "declared_version": "v0.3",
+      "declared_version_in_changelog": "v0.2"
+    },
+    {
+      "role": "GOAL",
+      "path": "LaYA-technical-roadmap-v0.3.md",
+      "sha256": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "byte_length": 62442,
+      "declared_version": "v0.3",
+      "declared_version_in_changelog": null
+    }
+  ],
+  "policy_version": "v0.3",
+  "version_conflicts": [
+    {
+      "file": "information-policy.md",
+      "kind": "SELF_DECLARED_MISMATCH",
+      "values": [
+        "v0.3",
+        "v0.2"
+      ]
+    }
+  ],
+  "proceed_allowed": false,
+  "state": {
+    "status": "PARTIAL",
+    "reason_code": "VERSION_CONFLICT"
+  },
+  "contract_version": "1.0"
+}

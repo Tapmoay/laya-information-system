@@ -1,0 +1,49 @@
+{
+  "cross_validation": {
+    "folds": 5,
+    "by_profile": {
+      "ai": {
+        "folds": 5,
+        "mean_f1": 0.4276,
+        "stdev_f1": 0.1369,
+        "min_f1": 0.2353,
+        "max_f1": 0.5882
+      },
+      "music_art": {
+        "folds": 5,
+        "mean_f1": 0.5587,
+        "stdev_f1": 0.1189,
+        "min_f1": 0.3636,
+        "max_f1": 0.7143
+      }
+    }
+  },
+  "threshold": 0.475,
+  "weights": {
+    "direction": 0.2,
+    "value": 0.3,
+    "quality": 0.5,
+    "reduced": 0.0,
+    "direction_floor": 0.25
+  },
+  "mean_f1": 0.5834,
+  "min_f1": 0.5319,
+  "by_profile": {
+    "ai": {
+      "items": 128,
+      "positives": 35,
+      "f1": 0.5319
+    },
+    "music_art": {
+      "items": 128,
+      "positives": 37,
+      "f1": 0.6349
+    }
+  },
+  "fitted_at": "2026-10-18T08:27:48+00:00",
+  "dataset_size": 256,
+  "profiles": [
+    "ai",
+    "music_art"
+  ]
+}

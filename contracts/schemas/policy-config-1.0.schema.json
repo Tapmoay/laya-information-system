@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laya.local/contracts/policy-config/1.0",
+  "title": "PolicyConfig",
+  "description": "从政策编译出的机器可读参数。数量上限是上限，不是配额；所有上限都必须带条款来源。CAP-POL-02 的输出。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "config_id",
+    "compiled_at",
+    "policy_version",
+    "policy_bundle_ref",
+    "capacity",
+    "capacity_sources",
+    "language",
+    "run_limits",
+    "config_hash",
+    "contract_version"
+  ],
+  "properties": {
+    "config_id": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "compiled_at": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/timestamp"
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy_bundle_ref": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/identifier"
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core_items_max",
+        "exploration_items_max",
+        "visual_match_max",
+        "visual_exploration_max",
+        "s_breakout_allowed"
+      ],
+      "properties": {
+        "core_items_max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "exploration_items_max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "visual_match_max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "visual_exploration_max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "s_breakout_allowed": {
+          "type": "boolean",
+          "description": "S 级重大变化是否允许突破常规容量。必须有可审计理由。"
+        }
+      }
+    },
+    "capacity_sources": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "clause"
+        ],
+        "properties": {
+          "field": {
+            "enum": [
+              "core_items_max",
+              "exploration_items_max",
+              "visual_match_max",
+              "visual_exploration_max",
+              "s_breakout_allowed"
+            ]
+          },
+          "clause": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          }
+        }
+      }
+    },
+    "language": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieval_mode",
+        "judgment_language_policy",
+        "delivery_language_mode",
+        "show_original_title",
+        "translated_text_is_evidence",
+        "verify_critical_claims_against_source"
+      ],
+      "properties": {
+        "retrieval_mode": {
+          "enum": [
+            "DYNAMIC_MULTILINGUAL",
+            "FIXED_LIST"
+          ]
+        },
+        "allowed_retrieval_languages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://laya.local/contracts/common/1.0#/$defs/language_tag"
+          },
+          "uniqueItems": true
+        },
+        "judgment_language_policy": {
+          "enum": [
+            "BEST_VALIDATED_PATH_PER_CAPABILITY",
+            "FIXED"
+          ]
+        },
+        "delivery_language_mode": {
+          "enum": [
+            "ZH_TRANSLATION",
+            "ORIGINAL",
+            "BILINGUAL"
+          ]
+        },
+        "show_original_title": {
+          "type": "boolean"
+        },
+        "translated_text_is_evidence": {
+          "const": false,
+          "description": "冻结：翻译永远不是独立证据。"
+        },
+        "verify_critical_claims_against_source": {
+          "type": "boolean"
+        }
+      }
+    },
+    "run_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_duration_minutes",
+        "max_network_retries",
+        "per_source_timeout_seconds",
+        "model_timeout_seconds",
+        "push_retry_limit"
+      ],
+      "properties": {
+        "max_duration_minutes": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_network_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "per_source_timeout_seconds": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 600
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model_timeout_seconds": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "push_retry_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "stop_on_policy_version_mismatch": {
+          "type": "boolean"
+        }
+      },
+      "description": "null = 尚未实测/决策，代码不得用任意常量顶替（v0.3 §2.2）。"
+    },
+    "config_hash": {
+      "$ref": "https://laya.local/contracts/common/1.0#/$defs/digest"
+    },
+    "contract_version": {
+      "const": "1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "language": {
+            "properties": {
+              "delivery_language_mode": {
+                "const": "ZH_TRANSLATION"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "language": {
+            "properties": {
+              "show_original_title": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
